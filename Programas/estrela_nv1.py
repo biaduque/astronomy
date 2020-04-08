@@ -149,6 +149,7 @@ class estrela:
         Função onde são criadas as fáculas da estrela. Todos os parâmetros 
         são relacionados ao tamanhdo da estrela, podendo o usuário escolher valores 
         ou selecionar a opção default.
+        ---Parametros ainda nao definidos
         *********INICIO DOS PARÂMETROS FÁCULA*******
         :parâmetro 
         :parâmetro 
@@ -167,6 +168,7 @@ class estrela:
         Função onde são criadas os flares da estrela. Todos os parâmetros 
         são relacionados ao tamanhdo da estrela, podendo o usuário escolher valores 
         ou selecionar a opção default.
+        ---Parametros ainda nao definidos
         *********INICIO DOS PARÂMETROS FLARES*******
         :parâmetro 
         :parâmetro 

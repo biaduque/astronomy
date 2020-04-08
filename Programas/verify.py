@@ -10,6 +10,17 @@ def Validar(msg):
             print("\033[0;31mErro! Digite uma entrada válida\033[m")
 
 def calSemiEixo(periodo):
+    '''
+    funcao que calcula o semieixo do planeta de acordo com o peridodo atraves da 3a lei de Kepler
+    parametros:
+    periodo :: periodo do planeta em dias
+    G :: constante gravitacional universal
+    Pi:: numero de pi
+    periodos:: periodo convertido convertido para segundos
+    mass:: massa da estrela em relacao a massa do sol 
+    massestrela:: conversao da massa da estrela
+    a :: semi eixo orbital retornado 
+    '''
     print(
     ''' 
                                  3a LEI DE KEPLER
