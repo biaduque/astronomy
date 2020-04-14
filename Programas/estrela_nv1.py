@@ -25,11 +25,11 @@ import numpy as np
 from verify import Validar
 
 def Plotar(tamanhoMatriz,estrela):
-        Nx = tamanhoMatriz
-        Ny = tamanhoMatriz
-        plt.axis([0,Nx,0,Ny])
-        plt.imshow(estrela,cmap="gray")
-        plt.show()
+    Nx = tamanhoMatriz
+    Ny = tamanhoMatriz
+    plt.axis([0,Nx,0,Ny])
+    plt.imshow(estrela,cmap="gray")
+    plt.show()
 
 class estrela:
     '''
@@ -67,6 +67,7 @@ class estrela:
         self.error=error
         self.Nx = self.tamanhoMatriz
         self.Ny = self.tamanhoMatriz
+        Plotar(self.tamanhoMatriz,self.estrela)
     
     #######  inserir manchas
 

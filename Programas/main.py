@@ -91,9 +91,9 @@ while error==-1: #enquanto o erro for -1, o while irá rodar, ou seja, o usuario
 error=-1
 while error==-1:
     try:
-        escolha=int(input('\033[1;35mDeseja adicionar manchas em sua estrela? 1. Sim 2. Não |\033[m'))  #x define a escolha, se haverá mancha ou não.
+        escolha= Validar('\033[1;35mDeseja adicionar manchas em sua estrela? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá mancha ou não.
         if escolha==1:
-            quantidade= int(input('\033[1;35mDigite a quantidade de manchas a serem adicionadas:\033[m'))
+            quantidade= Validar('\033[1;35mDigite a quantidade de manchas a serem adicionadas:\033[m')
             count=0
             while count!=quantidade: #o laço ira rodar a quantidade de manchas selecionada pelo usuario
                 print('\033[1;35m\n\n══════════════════ Parâmetros da mancha ',count+1,'═══════════════════\n\n\033[m')
@@ -112,10 +112,10 @@ while error==-1:
 error=-1
 while error==-1:
     try:
-        escolha= int(input('\033[1;92mDeseja adicionar fáculas em sua estrela? 1. Sim 2. Não |'))
+        escolha= Validar('\033[1;92mDeseja adicionar fáculas em sua estrela? 1. Sim 2. Não |')
         #var facula define a escolha, se haverá facula ou não.
         if escolha==1:
-            quantidade= int(input('Digite a quantidade de fáculas a serem adicionadas:'))
+            quantidade= Validar('Digite a quantidade de fáculas a serem adicionadas:')
             count=0
             while count!=quantidade:
                 print('*****Parâmetros da fácula ',count+1,'.*****\033[m')
@@ -133,11 +133,11 @@ error=-1
 while error==-1:
     try:
         #parâmetros dos flares 
-        escolha = int(input('Deseja adicionar flares em sua estrela? 1. Sim 2. Não |'))  
+        escolha = Validar('Deseja adicionar flares em sua estrela? 1. Sim 2. Não |')
         
         #var facula define a escolha, se haverá flares ou não.
         if escolha==1:
-            quantidade= int(input('Digite a quantidade de flares a serem adicionadas:'))
+            quantidade= Validar('Digite a quantidade de flares a serem adicionadas:')
             count=0
             while count!=quantidade:
                 print('*****Parâmetros do flare ',count+1,'.*****\033[m')
@@ -154,8 +154,7 @@ while error==-1:
 Nx= estrela_.getNx() #Nx  e Ny necessarios para a plotagem do eclipse
 Ny= estrela_.getNy()
 raioEstrelaPixel = estrela_.getRaioStar()
-estrelaManchada= estrela_.getEstrela()#retorna na verdade a estrela sem manchas para plotar no final 
-
+estrelaManchada= estrela_.getEstrela()#retorna na verdade a estrela sem manchas para plotar no final
 #atribuição de variáveis dadas pelos parâmetros para que sejam plotadas.
 
 
@@ -201,12 +200,12 @@ elif x==2:
             else:
                 semiEixoRaioStar = Validar('Semi eixo (em UA:)')
                 # em unidades de Rstar
-                semiEixoRaioStar = (149597870.7*semiEixoRaioStar)/raioStar
+                semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
                 #multiplicando pelas UA (transformando em Km) e convertendo em relacao ao raio da estrela    
             
             anguloInclinacao = float(input('Angulo de inclinação:')) 
 
-            raioPlanetaRstar = Validar('Raio do planeta (em relação ao raio de júpiter:)')
+            raioPlanetaRstar = Validar('Raio do planeta (em relação ao raio de Júpiter:)')
             raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplicando pelo raio de jupiter em km 
             while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
                 print('Planet does not eclipse star (change inclination angle)')

@@ -32,10 +32,10 @@ def calSemiEixo(periodo):
     A seguir, digite a massa da estrela em Kg para que a 3a Lei de Kepler seja apli-
     cada e entao, o Semi Eixo orbital seja calculado.
     \033[m''')
-    G= (6.674184*(10**-11)) #constante gravitacao universal
+    G= (6.674184*(10**(-11))) #constante gravitacao universal
     Pi=3.14159265359 
     periodos=periodo*86400 #transformando o periodo que é dado em dias em segundos
     mass= float(input("Digite a massa da estrela em unidades de MassSun:"))
     massestrela = mass * (1.989*(10**30))
-    a=(((periodos**2)*(G*massestrela))/(4*(Pi**2)))**1/3
+    a=(((periodos**2)*G*massestrela)/(4*(Pi**2)))**(1/3)
     return a
