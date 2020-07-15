@@ -20,7 +20,6 @@ verify:função criada para validar entradas, por exemplo numeros nao float/int 
 '''
 
 import numpy as np
-from matplotlib.pyplot import *
 import matplotlib.pyplot as plt
 from matplotlib import pyplot
 from estrela_nv1 import estrela

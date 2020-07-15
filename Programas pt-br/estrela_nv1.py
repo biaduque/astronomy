@@ -24,12 +24,6 @@ import matplotlib.image as mpimg
 import numpy as np
 from verify import Validar
 
-def Plotar(tamanhoMatriz,estrela):
-    Nx = tamanhoMatriz
-    Ny = tamanhoMatriz
-    plt.axis([0,Nx,0,Ny])
-    plt.imshow(estrela,cmap="gray")
-    plt.show()
 
 class estrela:
     '''
@@ -67,12 +61,12 @@ class estrela:
         self.error=error
         self.Nx = self.tamanhoMatriz
         self.Ny = self.tamanhoMatriz
-        Plotar(self.tamanhoMatriz,self.estrela)
+        #Plotar(self.tamanhoMatriz,self.estrela)
     
     #######  inserir manchas
 
 
-    def manchas(self,r,intensidadeMancha,count):
+    def manchas(self,r,intensidadeMancha,lat,longt):
         '''
         Função onde é criada a(s) mancha(s) da estrela. Todos os parâmetros 
         são relacionados ao tamanho da estrela, podendo o usuário escolher valores 
@@ -95,8 +89,7 @@ class estrela:
         self.intensidadeMancha = intensidadeMancha # intensidade da mancha em funcao da intensidade maxima da estrela
 
         #coordenadas de posicionamento da mancha em graus
-        lat=float(input('Latitude da mancha:'))
-        longt=float(input('Longitude da mancha:'))
+
 
         degreeToRadian = np.pi/180. #A read-only variable containing the floating-point value used to convert degrees to radians.
         self.latitudeMancha  = lat * degreeToRadian 
@@ -126,18 +119,13 @@ class estrela:
                 
         spot[ii]=self.intensidadeMancha
         spot = spot.reshape([self.Ny, self.Nx])
-        if count==0: #se for a primeira mancha a ser adicionada, ela sobrescrevera a self.estrela, que é a estrela sem nenhuma mancha
-            #criação da estrela com manchas
-            estrelaManchada = self.estrela * spot
-            plt.axis([0,self.Nx,0,self.Ny])
-        else: 
-            #criação da estrela com manchas
-            estrelaManchada = estrelaManchada * spot #se ja tiver adicionado manchas, sobrescrevera a propria estrela manchada
-            plt.axis([0,self.Nx,0,self.Ny])
+    
+        self.estrela= self.estrela * spot
+        plt.axis([0,self.Nx,0,self.Ny])
                 
         #self.estrelaManchada= estrelaManchada
-        self.estrela=estrelaManchada  #transforma sempre a estrela manchada em objeto de estrela
-        Plotar(self.tamanhoMatriz,self.estrela)
+        
+        #Plotar(self.tamanhoMatriz,self.estrela)
         error=0
         self.error=error
         return self.estrela #retorna a decisão: se há manchas ou não
@@ -214,3 +202,10 @@ class estrela:
         o valor origem da variável (que é -1).
         '''
         return self.error
+
+    def Plotar(self,tamanhoMatriz,estrela):
+        Nx = tamanhoMatriz
+        Ny = tamanhoMatriz
+        plt.axis([0,Nx,0,Ny])
+        plt.imshow(estrela,cmap="gray")
+        plt.show()

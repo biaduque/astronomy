@@ -10,11 +10,10 @@ __status__ = "Production"
 
 
 import numpy as np
-from matplotlib.pyplot import *
 from matplotlib import pyplot
 from estrela_nv1 import estrela
 from eclipse_nv1 import Eclipse
-from verify import Validar,calSemiEixo
+from verify import Validar,calSemiEixo,calculaLat
 
 
 ############CRIAÇÃO DA ESTRELA#############
@@ -38,14 +37,17 @@ print('''\033[1;36m
 ║-RAIO EM PIXEL: 373                             ║      
 ║ -INTENSIDADE DO CENTRO DA ESTRELA: 240         ║
 ║ COEFICIENTE DE ESCURECIMENTO DE LIMBO          ║
-║ -UM: 0.5                                       ║
-║-DOIS:0.3                                       ║
+║-u1: 0.5                                        ║
+║-u2:0.3                                         ║
 ╚════════════════════════════════════════════════╝\033[m\n\n''')
 #default
 #raio da estrela em pixels
 raio = 373.
 #intensidade do centro da estrela (ou intensidade máxima)
 intensidadeMaxima=240.
+
+
+#iniciando a coleta de dados dos parametros da estrela
 error=-1
 while error==-1:
     try:
@@ -58,8 +60,8 @@ while error==-1:
         elif x==2:
             raioStar= Validar('Raio da estrela (em relação ao raio do sol):')
             raioStar=raioStar*696340 #multiplicando pelo raio solar em Km 
-            coeficienteHum = float(input('Coeficiente de escurecimento de limbo 1:'))
-            coeficienteDois = float(input('Coeficiente de escurecimento de limbo 2:'))
+            coeficienteHum = float(input('Coeficiente de escurecimento de limbo 1 (u1):'))
+            coeficienteDois = float(input('Coeficiente de escurecimento de limbo 2 (u2):'))
 
         #fazer um if de config recomendada
         x=int(input('Tamanho da matriz definido como 856, deseja alterar? 1.Sim 2.Não :'))
@@ -76,16 +78,77 @@ while error==-1:
 
 
 
-error=-1 #trata o erro
 
+error=-1 #trata o erro
 #ESTRELA
 while error==-1: #enquanto o erro for -1, o while irá rodar, ou seja, o usuario terá que refazer o processo se estiver apresentando algum erro
     #se passar por todos os inputs sem erro, a função retornará 0, e assim, sairá do laço e passará para a próxima etapa
     try:
         estrela_ = estrela(raio,intensidadeMaxima,coeficienteHum,coeficienteDois,tamanhoMatriz)
+        estrela = estrela_.getEstrela()
+        estrela_.Plotar(tamanhoMatriz,estrela)
         error=estrela_.getError() #se não houver nenhum erro, ele receberá 0, o que o fará sair do laço.
     except Exception as erro:
         print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m') #retorna o tipo de erro
+
+##################### INICIANDO O ECLIPSE ##########################
+
+#planeta,transito,curvaLuz 
+print('''\033[1;33m
+        ╔══════════════════════════»»» ECLIPSE EXEMPLO «««══════════════════════════════╗
+        ║- PERÍODO: 10 (em dias)                                                        ║           
+        ║- SEMI EIXO (em relação ao raio da estrela): 15                               	║
+        ║- ÂNGULO DE INCLINAÇÃO (em graus):88                                       	║
+        ║- RAIO DO PLANETA (em relação ao raio da estrela):0.1                         	║
+        ╚═══════════════════════════════════════════════════════════════════════════════╝\033[m'''
+        )
+dtor = np.pi/180.  
+aux= True
+while aux == True: 
+    try:
+        x=int(input('1.Eclipse Exemplo. 2.Alterar:')) #escolha de como passar os parametros do eclipse
+        aux= False
+    except Exception as erro:
+        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+                
+if x==1:
+#entradas default
+    periodo = 10.  # em dias
+    semiEixoRaioStar = 15   # em unidades de Rstar
+    anguloInclinacao = 88.  # em graus
+    raioPlanetaRstar = 0.1   # em unidades de Rstar      
+            
+elif x==2:
+    aux= True
+    while aux == True:
+        try:
+            periodo = Validar("Período:")
+            anguloInclinacao = float(input('Angulo de inclinação:')) 
+            raioPlanetaRstar = Validar('Raio do planeta (em relação ao raio de Júpiter):')
+            raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplicando pelo raio de jupiter em km 
+
+            dec=int(input("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |"))
+            if dec==1:
+                mass= Validar("Digite a massa da estrela em unidades de MassSun:")
+                semieixoorbital = calSemiEixo(periodo,mass)
+                print("resultado = ", semieixoorbital)
+                semiEixoRaioStar = ((semieixoorbital/1000)/raioStar)
+                #transforma em km para fazer em relação ao raio da estrela
+            else:
+                semiEixoRaioStar = Validar('Semi eixo (em UA:)')
+                # em unidades de Rstar
+                semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
+                #multiplicando pelas UA (transformando em Km) e convertendo em relacao ao raio da estrela
+            
+            while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
+                print('Planet does not eclipse star (change inclination angle)')
+                anguloInclinacao = float(input('Angulo de inclinação:')) 
+            
+            aux= False
+        
+        except Exception as erro:
+            print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+                
 
 #MANCHA DA ESTRELA
 error=-1
@@ -93,20 +156,44 @@ while error==-1:
     try:
         escolha= Validar('\033[1;35mDeseja adicionar manchas em sua estrela? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá mancha ou não.
         if escolha==1:
+            latsugerida = calculaLat(semiEixoRaioStar,anguloInclinacao)
+            print("A latitude sugerida para que a mancha influencie na curva de luz da estrela é:", latsugerida)
             quantidade= Validar('\033[1;35mDigite a quantidade de manchas a serem adicionadas:\033[m')
+            quantidade=int(quantidade)
             count=0
+            #cria vetores do tamanho de quantidade para colocar os parametros das manchas
+            fa = [0.]*quantidade #vetor area manchas
+            fi = [0.]*quantidade #vetor intensidade manchas
+            li = [0.]*quantidade #vetor longitude manchas
             while count!=quantidade: #o laço ira rodar a quantidade de manchas selecionada pelo usuario
                 print('\033[1;35m\n\n══════════════════ Parâmetros da mancha ',count+1,'═══════════════════\n\n\033[m')
-                r = Validar('Digite o raio da mancha em função do raio da estrela em pixels:')
-                intensidadeMancha= float(input('Digite a intensidade da mancha em função da intensidade máxima da estrela:'))
-                estrela=estrela_.manchas(r,intensidadeMancha,count) #recebe a escolha de se irá receber manchas ou não
+                r = Validar('Digite o raio da mancha em função do raio da estrela: ')
+                
+                intensidadeMancha= Validar('Digite a intensidade da mancha em função da intensidade máxima da estrela:')
+                fi[count]=intensidadeMancha
+                lat=float(input('Latitude da mancha:'))
+
+                longt=float(input('Longitude da mancha:'))
+                li[count]=longt
+
+                raioMancha= r*raioStar
+                area = np.pi *(raioMancha**2)
+                fa[count] = area
+
+                estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #recebe a escolha de se irá receber manchas ou não
                 error=estrela_.getError()
                 count+=1
+            print(fi)
+            print(li)
+            print(fa)
         else:
             estrela = estrela_.getEstrela()  # armazena o que esta guardado no objeto estrela para sobrescrever
             error=0    
     except Exception as erro:
         print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+
+
+estrela_.Plotar(tamanhoMatriz,estrela)
 
 #FACULA DA ESTRELA
 error=-1
@@ -158,64 +245,6 @@ estrelaManchada= estrela_.getEstrela()#retorna na verdade a estrela sem manchas 
 #atribuição de variáveis dadas pelos parâmetros para que sejam plotadas.
 
 
-##################### INICIANDO O ECLIPSE ##########################
-
-#planeta,transito,curvaLuz 
-print('''\033[1;33m
-        ╔══════════════════════════»»» ECLIPSE EXEMPLO «««══════════════════════════════╗
-        ║- PERÍODO: 10 (em dias)                                                        ║           
-        ║- SEMI EIXO (em relação ao raio da estrela): 15                               	║
-        ║- ÂNGULO DE INCLINAÇÃO (em graus):88                                       	║
-        ║- RAIO DO PLANETA (em relação ao raio da estrela):0.1                         	║
-        ╚═══════════════════════════════════════════════════════════════════════════════╝\033[m'''
-        )
-dtor = np.pi/180.  
-aux= True
-while aux == True: 
-    try:
-        x=int(input('1.Eclipse Exemplo. 2.Alterar:')) #escolha de como passar os parametros do eclipse
-        aux= False
-    except Exception as erro:
-        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
-                
-if x==1:
-#entradas default
-    periodo = 10.  # em dias
-    semiEixoRaioStar = 15   # em unidades de Rstar
-    anguloInclinacao = 88.  # em graus
-    raioPlanetaRstar = 0.1   # em unidades de Rstar
-           
-            
-elif x==2:
-    dec=0 #decisao se ira calcular o semi eixo ou nao 
-    aux= True
-    while aux == True:
-        try:
-            periodo = Validar("Período:")
-            dec=int(input("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |"))
-            if dec==1:
-                semieixoorbital = calSemiEixo(periodo)
-                semiEixoRaioStar = ((semieixoorbital/1000)/raioStar)
-                #transforma em km para fazer em relação ao raio da estrela
-            else:
-                semiEixoRaioStar = Validar('Semi eixo (em UA:)')
-                # em unidades de Rstar
-                semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
-                #multiplicando pelas UA (transformando em Km) e convertendo em relacao ao raio da estrela    
-            
-            anguloInclinacao = float(input('Angulo de inclinação:')) 
-
-            raioPlanetaRstar = Validar('Raio do planeta (em relação ao raio de Júpiter:)')
-            raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplicando pelo raio de jupiter em km 
-            while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
-                print('Planet does not eclipse star (change inclination angle)')
-                anguloInclinacao = float(input('Angulo de inclinação:')) 
-            
-            aux= False
-        
-        except Exception as erro:
-            print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
-                
 
 error=-1 #tratando os erros em eclipse
 eclipse= Eclipse(Nx,Ny,raioEstrelaPixel,estrelaManchada) 
@@ -239,3 +268,4 @@ tempoHoras=eclipse.getTempoHoras()
 pyplot.plot(tempoHoras,curvaLuz)
 pyplot.axis([-tempoTransito/2,tempoTransito/2,min(curvaLuz)-0.001,1.001])                       
 pyplot.show()
+

@@ -1,15 +1,18 @@
+import numpy as np
+np.seterr(divide='ignore', invalid='ignore')
+
 def Validar(msg):
     '''função criada para validar entradas, por exemplo numeros nao float/int ou negativos'''
     valor=0
     while True:
         n=float(input(msg))
-        if  n>0:
+        if  n>=0:
             valor= n
             return valor
         else:
             print("\033[0;31mErro! Digite uma entrada válida\033[m")
 
-def calSemiEixo(periodo):
+def calSemiEixo(periodo,mass):
     '''
     funcao que calcula o semieixo do planeta de acordo com o peridodo atraves da 3a lei de Kepler
     parametros:
@@ -33,9 +36,14 @@ def calSemiEixo(periodo):
     cada e entao, o Semi Eixo orbital seja calculado.
     \033[m''')
     G= (6.674184*(10**(-11))) #constante gravitacao universal
-    Pi=3.14159265359 
     periodos=periodo*86400 #transformando o periodo que é dado em dias em segundos
-    mass= float(input("Digite a massa da estrela em unidades de MassSun:"))
     massestrela = mass * (1.989*(10**30))
-    a=(((periodos**2)*G*massestrela)/(4*(Pi**2)))**(1/3)
+    a=(((periodos**2)*G*massestrela)/(4*(np.pi**2)))**(1/3)
     return a
+
+def calculaLat(semiEixoRaioStar,anguloInclinacao):
+    '''Funcao que calcula latitude para que a mancha seja influente na curva de luz'''
+    dtor=np.pi/180
+    lat = - (np.arcsin(semiEixoRaioStar*np.cos(anguloInclinacao*dtor))/dtor)
+    return lat
+
