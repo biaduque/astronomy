@@ -4,6 +4,48 @@ from estrela_nv1 import estrela
 from eclipse_nv1 import Eclipse
 from verify import Validar,calSemiEixo,calculaLat
 
+'''
+main programado para profissionais e estudantes familiarizados com a área 
+--- estrela ---
+parâmetro raio:: raio do planeta em dias 
+parâmetro intensidadeMaxima:: intensidade da estrela que sera plotada 
+parâmetro tamanhoMatriz:: tamanho em pixels da matriz estrela
+parâmetro raioStar:: raio da estrela em relação ao raio do sol
+parâmetro coeficienteHum:: coeficiente de escurecimento de limbo 1 (u1)
+parâmetro coeficienteDois:: coeficiente de escurecimento de limbo 2 (u2)
+objeto estrela_ :: é o objeto estrela onde é guardada a matriz estrela de acordo com os parâmetros. Chamadas das funções da classe
+estrela são feitas através dele.
+parâmetro estrela :: variavel que recebe o objeto estrela 
+
+--- planeta ---
+parâmetro periodo:: periodo de órbita do planeta em dias 
+parâmetro anguloInclinacao:: ângulo de inclinação do planeta em graus
+parâmetro semieixoorbital:: semi-eixo orbital do planeta
+parâmetro semiEixoRaioStar:: conversão do semi-eixo orbital em relação ao raio da estrela 
+parâmetro raioPlanetaRstar:: conversão do raio do planeta em relação ao raio de Júpiter para em relação ao raio da estrela
+
+
+---  mancha --- 
+parâmetro latsugerida:: latitude sugerida para a mancha
+parâmetro fa:: vetor com a área de cada mancha
+parâmetro fi:: vetor com a intensidade de cada mancha
+parâmetro li:: vetor com a longitude de cada mancha 
+parâmetro quantidade:: variavel que armazena a quantidade de manchas
+parâmetro r:: raio da mancha em relação ao raio da estrela
+parâmetro intensidadeMancha:: intensidade da mancha em relação a intensidade da estrela
+parâmetro lat:: latitude da mancha 
+parâmetro longt:: longitude da mancha 
+parâmetro raioMancha:: raio real da mancha
+parâmetro area::  area da mancha 
+
+--- eclipse ---
+parâmetro eclipse:: variavel que guarda o objeto da classe eclipse que gera a curva de luz. Chamadas das funções da classe 
+Eclipse () são feitas através dele. 
+parâmetro tempoTransito:: tempo do transito do planeta 
+parâmetro curvaLuz:: matriz curva de luz que sera plotada em forma de grafico 
+parâmetro tempoHora:: tempo do transito em horas matriz
+'''
+
 raio= 373. #default (pixel)
 intensidadeMaxima=240 #default
 tamanhoMatriz = 856 #default

@@ -1,8 +1,60 @@
+__author__ = "Beatriz Duque"
+__copyright__ = "..."
+__credits__ = ["Universidade Presbiteriana Mackenzie, CRAAM"]
+__license__ = ""
+__version__ = ""
+__maintainer__ = ""
+__email__ = "biaduque7@hotmail.com"
+__status__ = "Production"
+
+
 import numpy as np
 from matplotlib import pyplot
 from eclipse_nv1 import Eclipse
 from star_nv1 import estrela
 from verify import Validar,calSemiEixo,calculaLat
+
+'''
+main programmed for professionals and students familiar with the area
+--- star ---
+radius parameter :: radius of the planet in days
+parameter MaximumMaximity :: intensity of the star to be plotted
+parameter matrix size :: size in pixels of the star matrix
+parameter rayStar :: ray of the star in relation to the ray of the sun
+parameter coefficientHum :: dimming coefficient of limbus 1 (u1)
+parameter coefficientTwo :: limbo dimming coefficient 2 (u2)
+star_ object :: is the star object where the star matrix is ​​stored according to the parameters. Class function calls
+star are made through it.
+star parameter :: variable that receives the star object
+
+--- planet ---
+parameter period :: planet's orbit period in days
+parameter anguloInclinacao :: angle of inclination of the planet in degrees
+semieixoorbital parameter :: planet's orbital semi-axis
+parameter semiEixoRaioStar :: conversion of the orbital semi-axis in relation to the star radius
+parameter radarPlanetaRstar :: conversion of the radius of the planet in relation to the radius of Jupiter to in relation to the radius of the star
+
+
+---  spot ---
+latsugerida parameter :: suggested latitude for the spot
+parameter fa :: vector with the area of ​​each spot
+fi parameter :: vector with the intensity of each spot
+parameter li :: vector with the length of each spot
+parameter quantity :: variable that stores the amount of stains
+parameter r :: radius of the spot in relation to the radius of the star
+parameter intensityMancha :: intensity of the stain in relation to the intensity of the star
+lat :: spot latitude parameter
+longt parameter :: spot length
+parameter rayMancha :: real radius of the spot
+parameter area :: spot area
+
+--- eclipse ---
+eclipse parameter :: variable that holds the object of the eclipse class that generates the light curve. Class function calls
+Eclipse () are done through it.
+parameter tempoTransito :: transit time of the planet
+light curve parameter :: light curve matrix that will be plotted as a graph
+parameter tempoHora :: transit time in matrix hours
+'''
 
 raio= 373. #default (pixel)
 intensidadeMaxima=240 #default
