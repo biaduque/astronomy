@@ -99,7 +99,7 @@ class Eclipse:
         :parâmetro dteta: intervalo angular entre pontos da orbita
         :parâmetro tetaPos: angulos das posicaos do planeta na órbita
         :parâmetro xplaneta: x na matriz que projetará o planeta
-        :parâmetro yplanetas: t na matriz que projetará o planeta
+        :parâmetro yplaneta: t na matriz que projetará o planeta
         '''
         dteta = 360*intervaloTempo/self.periodo/24./60   # intervalo angular entre pontos da orbita (em graus)
 

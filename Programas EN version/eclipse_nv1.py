@@ -10,13 +10,13 @@ __status__ = "Production"
 '''
 Program that simulates the eclipse and light curve of a planet as it transits
 host star.
-In this program, a star light curve is calculated in relation to the parameters of the planet used
+In this program, a star light curve is calculated in relation to the parameters of the planet added 
 by the user.
 *** Imported libraries ***
 numpy:
 matplotlib:
-star: program file where star parameters are calculated, given user data (radius, intensity, etc.)
-check: function created for valid entries, for example, non-floating numbers / int or negative numbers
+star: program file where's star parameters are calculated, given user data (radius, intensity, etc.)
+check: function created to validate entries, for example, non-floating numbers / int or negative numbers
 '''
 
 import numpy as np
@@ -27,14 +27,14 @@ from verify import Validar
 
 class Eclipse:
     '''
-  Creation of the eclipse class, which will return the traffic light curve of the planet around the star
+  Creation of the eclipse class, which will return the traffic light curve of the planet "surrounding the star
 
 
      **** parameters assigned to the planet ****
-     : period parameter: planet rotation period
-     : parameter SemiEixoRaioStar: semi axis of the planet in relation to the radius of the star
-     : parameter angleInclination: angle of inclination of the planet
-     : radius parameterPlanetaRstar: radius of the planet
+     : periodo parameter: planet's rotation period
+     : SemiEixoRaioStar parameter: planet's semi axis  in relation to the star's radius
+     : anguloInclination parameter: planet's tilt angle
+     : raioPlanetaRstar parameter: planet's radius
     '''
     def __init__(self,Nx,Ny,raioEstrelaPixel,estrelaManchada):
 
@@ -51,7 +51,7 @@ class Eclipse:
         self.raioPlanetaRstar = raioPlanetaRstar
 
         dtor = np.pi/180.
-        '''Start of calculation of TOTAL transit TIME using parameters passed to the planet.'''
+        '''Calculation's start of the ENTIRE transit TIME using parameters assigned to the planet.'''
         #default
         anguloObliquidade = 0.
         anguloRot = 0.
@@ -65,7 +65,7 @@ class Eclipse:
         duracaoTransito=2 * (90.-np.arccos((np.cos(latitudeTransito*dtor))/self.semiEixoRaioStar)/dtor)*self.periodo/360*24. 
         tempoTotal = 3 * duracaoTransito
 
-        x=int(input("Time interval = 1. Do you want to change? 1. YES | 2. NO:"))
+        x=int(input("Time period = 1. Do you want to change? 1. YES | 2. NO:"))
         if x ==1:
             intervaloTempo=float(input('Enter the time interval in minutes:'))
         elif x==2:
@@ -76,14 +76,14 @@ class Eclipse:
 
         '''
         Start of the time calculation in Hours and the Light curve in the matrix
-         : parameter nn: calculation of the number of points on the light curve
-         : parameter sizeMatrix: receives the spotted star and then plot the planet
-         : time parameter: calculates transit time in hours, transforming it into an Eclipse class object
-         : parameter curveLight: calculates the light curve of the planet's transit when eclipsing the star, it also becomes
-         Eclipse object     
+         :nn  parameter: calculation's number of dots on the light curve
+         :tamanhoMatrix parameter: receives the spotted star and then plot the planet
+         :tempoHoras parameter: calculates transit time in hours, transforming it into an Eclipse class object
+         : parameter curveLight: calculates the light curve of the planet's transit when eclipsing the star. It also becomes
+         an Eclipse object     
         '''
         
-        # calculation of the number of points on the light curve
+        # calculation of the number of dots on the light curve
         nn=np.fix(tempoTotal*60./intervaloTempo)
 
         # OUTPUT
@@ -98,16 +98,16 @@ class Eclipse:
         '''
         Orbit parameters
          : dteta parameter: angular interval between points of the orbit
-         : thetaPos parameter: angles of the planet's positions in orbit
-         : xplaneta parameter: x in the matrix that will project the planet
-         : yplanetas parameter: t in the matrix that will project the planet
+         : tetaPos parameter: angles of the planet's positions in orbit
+         : xplaneta parameter: x in the matrix that projects the planet
+         : yplaneta parameter: t in the matrix that projects the planet
         '''
-        dteta = 360*intervaloTempo/self.periodo/24./60   # angular interval between orbit points (in degrees)
+        dteta = 360*intervaloTempo/self.periodo/24./60   # angular range between orbiting points (in degrees)
 
         # angles of planet positions in orbit
         tetaPos = ((np.arange(tamanhoMatriz) - tamanhoMatriz/2)*dteta+270.)*dtor    #in radians
 
-        #projected orbit of the planet
+        #"planet's projected orbit
         xplaneta = semiEixoPixel*np.cos(tetaPos) + tamanhoMatriz/2
         yplaneta = semiEixoPixel*np.sin(tetaPos)*np.cos(anguloInclinacao*dtor) + tamanhoMatriz/2
 
@@ -120,7 +120,7 @@ class Eclipse:
         ''''
         Light curve and intensity normalization
         '''
-        #maximum of the light curve, used to normalize the intensity
+        #light curve's maximum, used to normalize the intensity
         maxCurvaLuz = np.sum(self.estrelaManchada) 
 
         
@@ -130,7 +130,7 @@ class Eclipse:
         '''
         for i in range(0,len(pp)):
 
-                        plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. #matrix of n by n
+                        plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. #n-by-n matrix
                         x0=xplan[i]
                         y0=yplan[i]
 
@@ -156,17 +156,17 @@ class Eclipse:
 
     '''Calling and returning objects assigned to the Eclipse class'''
     def getTempoTransito(self):
-        '''Returns the "tempoTotal" parameter, representing the transit time of the planet on its host star.'''
+        '''Returns "tempoTotal" parameter, representing the transit time of the planet on its host star.'''
         return self.tempoTotal
     def getTempoHoras(self):
-        '''Returns the parameter "tempoHoras", representing the planet's transit time on its host star in Hours.'''
+        '''Returns "tempoHoras" parameter, representing the planet's transit time on its host star in Hours.'''
         return self.tempoHoras
     def getCurvaLuz(self):
-        '''Returns the parameter "curvaLuz", representing the light curve of the star that has a planet orbiting it.'''
+        '''Returns "curvaLuz" parameter, representing the light curve of the star that has a planet orbiting it.'''
         return self.curvaLuz
     def getError(self):
         '''
-        Returns the error value, whether or not any errors occur. If there is no error, it receives 0. If there is, 
+        Returns the error value, whether or not any errors occurred. If there is no error, it is assigned 0. If any errors occu, 
         the variable will have its starting value (which is -1)
         '''
         return self.error

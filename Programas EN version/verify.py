@@ -8,30 +8,30 @@ def Validar(msg):
             valor= n
             return valor
         else:
-            print("\033[0;31mErro! Digite uma entrada válida\033[m")
+            print("\033[0;31mError! Type a valid entry.\033[m")
 
 def calSemiEixo(periodo,mass):
     '''
-    function that calculates the planet's half-axis according to the period through Kepler's 3rd law
+    function that calculates the planet's semi-axis according to the period through Kepler's 3rd law
     parameters:
-    periodo :: period of the planet in days
+    periodo :: planet's period in days
     G :: universal gravitational constant
-    Pi :: number of pi
+    Pi :: pi's value
     periodos :: converted period converted to seconds
     mass :: mass of the star in relation to the mass of the sun
-    massestrela :: star mass conversion
-    a :: semi orbital axis returned
+    massestrela :: star's mass conversion
+    a :: orbital semiaxis returned
     '''
     print(
     ''' 
-                                 3a LEI DE KEPLER
+                                 KEPLER'S 3rd LAW
     \033[1;35m------------------------------------------------------------------------------
     períodos**2= ((4*(pi))**2/G*(massaestrela+massaplaneta))*(semieixoorbital***3)
     G=9,806 65 m/s²,
     Pi=3.14159265359
     -------------------------------------------------------------------------------
     \033[m''')
-    G= (6.674184*(10**(-11))) #constant universal gravitation
+    G= (6.674184*(10**(-11))) #universal gravitation constant 
     periodos=periodo*86400 #transforming the period that is given in days into seconds
     massestrela = mass * (1.989*(10**30))
     a=(((periodos**2)*G*massestrela)/(4*(np.pi**2)))**(1/3)
