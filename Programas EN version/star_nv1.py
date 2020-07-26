@@ -8,8 +8,7 @@ __email__ = "biaduque7@hotmail.com"
 __status__ = "Production"
 
 '''
-This program simulates the plotting of a star with spots, using parameters such as radius, intensity, darkening
-limbo, etc.
+This program simulates the plotting of a star with spots, using parameters such as radius, intensity, limb darkening, etc.
 '''
 
 
@@ -23,17 +22,17 @@ from verify import Validar
 
 class estrela:
     '''
-    The star class receives as its object the radius, maximum intensity, limb dimming coefficients.
-    The star is formatted in an array of defeault size 856.
+    The star class receives as its object the radius, maximum intensity, limb darkening coefficients.
+    The star is formed in a matrix of defeault size 856.
     Objects belonging to the class are the parameters passed to the spot, such as: radius, intensity, longitude and latitude
     in relation to the star.
     ************ STAR PARAMETERS ***************
-    : radius parameter: The radius of the star
-    : MaximumMaximum parameter: Intensity of the center of the star
-    : coefficient parameterHum: Limbo dimming coefficient
-    : parameter coefficientTwo: Limbo dimming coefficient
-    : parameter sizeMatrix: Size of the matrix in which the star will be built
-    : star parameter: Star built with limbo dimming coefficients
+    : raio parameter: The radius of the star
+    : intensidadeMaxima parameter: Intensity of the center of the star
+    : coeficienteHum parameter: Limbo dimming coefficient
+    : coeficienteDois parameter: Limbo dimming coefficient
+    : amanhoMatriz parameter: Size of the matrix in which the star will be built
+    : estrela parameter: Star built with limbo dimming coefficients
     '''
    
 
@@ -61,31 +60,33 @@ class estrela:
     #insert spots
 
 
+
     def manchas(self,r,intensidadeMancha,lat,longt):
         '''
         Function where the star spot (s) is created. All parameters
-        are related to the size of the star, the user being able to choose values
+        are related to the size of the star, with the user being able to enter values
         or select the default option.
         ********* START OF SPOT PARAMETERS *******
-        : parameter radiusMancha: Radius of the spot in relation to the radius of the star
-        : intensity parameterMancha: Stain intensity as a function of maximum star intensity
-        : latitude parameterMancha: Spot latitude coordinate in relation to the star
-        : parameter longitudeMancha: Coordinate of spot length in relation to the star
+        : raioMancha parameter: Radius of the spot in relation to the radius of the star
+        : intensicadeMancha parameter: Stain intensity as a function of maximum star intensity
+        : latitudeMancha : Spot's latitude coordinate in relation to the star
+        : latitudeMancha parameter: Spot's latitude coordinate in relation to the star
+        : longitudeMancha parameter: Spot's longitude coordinate in relation to the star
         
         '''
-      # Stain parameters for testing
-        # # r = 0.05 (test)
-        #intensidadeMancha = 0.5 (test) spot intensity 
+        #Spots parameters for testing
+        #r = 0.05 (test)
+        #intensidadeMancha = 0.5 (test) spot's intensity 
         # spot coordinates in degrees
         #test latitude = -30
         #test longitude = 20
 
-        self.raioMancha = self.raio * r # radius versus star radius in pixels
-        self.intensidadeMancha = intensidadeMancha # stain intensity as a function of maximum star intensity
+        self.raioMancha = self.raio * r # in relation to the star's radius in pixels
+        self.intensidadeMancha = intensidadeMancha # spot intensity as a function of maximum star intensity
 
         
 
-        #coordinates of spotting in degrees
+        #spot's position coordinates in degrees
         degreeToRadian = np.pi/180. #A read-only variable containing the floating-point value used to convert degrees to radians.
         self.latitudeMancha  = lat * degreeToRadian 
         self.longitudeMancha =  longt * degreeToRadian
@@ -96,15 +97,15 @@ class estrela:
         anguloHelio=np.arccos(np.cos(self.latitudeMancha)*np.cos(self.longitudeMancha))
 
                 
-        # projection effect by the spot being at an angleHeliocentric from the center of the star - ellipticity
-        yy = ys + self.Ny/2 # pixel position with respect to the matrix origin
-        xx = xs + self.Nx/2 # pixel position with respect to the matrix origin
+        # projection effect by the spot being at an heliocentricAngle from the center of the star - ellipticity
+        yy = ys + self.Ny/2 # pixel position in relation to the matrix origin
+        xx = xs + self.Nx/2 # pixel position in relation to the matrix origin
 
         kk = np.arange(self.Ny * self.Nx)
         vx = kk-self.Nx*np.int64(1.*kk/self.Nx) - xx
         vy = kk/self.Ny - yy
 
-       # stain rotation angle
+       # spot's rotation angle
         anguloRot=np.abs(np.arctan(ys/xs))    #in radians
         if self.latitudeMancha*self.longitudeMancha > 0: anguloRot=-anguloRot
 
@@ -123,16 +124,15 @@ class estrela:
         self.error=error
         return self.estrela #returns the spotted star
 
-    #insert flares
     def faculas(self,estrela,count): 
         
          #receive the updated star as a parameter
         '''
-        Function where the star faces are created. All parameters
-        are related to the size of the star, the user being able to choose values
+        Function where the star's faculas are created. All parameters
+        are related to the size of the star, with the user being able to enter values
         or select the default option.
         --- Parameters not yet defined
-        ********* START OF PARAMETERS FACULA *******
+        ********* START OF FACULA PARAMETERS*******
         :parameter
         :parameter
         :parameter
@@ -143,15 +143,15 @@ class estrela:
         self.error=error
         #will overwrite the star he is creating, whether it is the star or the spotted star
         self.estrela=estrela
-        return self.estrela ##returns the spotted star
+        return self.estrela #returns the spotted star
     
     def flares(self,estrela,count): #receives the updated star as a parameter
         '''
-        Function where the star flares are created. All parameters
-        are related to the size of the star, the user being able to choose values
+        Function where the star's flares are created. All parameters
+        are related to the size of the star, with the user being able to enter values
         or select the default option.
         --- Parameters not yet defined
-        ********* START OF FLAR PARAMETERS *******
+        ********* START OF FLARES PARAMETERS *******
         :parameter
         :parameter
         :parameter
@@ -162,7 +162,7 @@ class estrela:
        
         error=0
         self.error=error
-        #will overwrite the star he is creating, be it the star or the spotted star.
+        #will overwrite the star he is creating, whether it is the star or the spotted star.
         self.estrela=estrela
         return self.estrela #returns the spotted star
 
@@ -180,18 +180,18 @@ class estrela:
 
     def getRaioStar(self):
         '''
-        Returns the radius of the star, necessary for the Eclipse program, since the radius of the planet occurs in
-        relation to the star radius.
+        Returns the radius of the star, necessary for the Eclipse program, since the radius of the planet is given in
+        relation to the star's radius.
         '''
         return self.raio
     def getEstrela(self):
         '''
-        Returns the star, plotted without the stains, necessary if the user chooses the plot without stains.
+        Returns the star, plotted without the spots, necessary if the user chooses the plot without spots.
         '''
         return self.estrela
     def getError(self):
         '''
-        Returns error value. If there are no errors, the variable will assume 0. If there are errors, the program will keep
+        Returns error value. If there are no errors, the variable's value will become 0. If there are errors, the program will keep
         the source value of the variable (which is -1).
         '''
         return self.error
