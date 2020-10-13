@@ -91,6 +91,9 @@ while error==-1: #enquanto o erro for -1, o while irá rodar, ou seja, o usuario
     except Exception as erro:
         print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m') #retorna o tipo de erro
 
+
+
+
 ##################### INICIANDO O ECLIPSE ##########################
 
 #planeta,transito,curvaLuz 
@@ -237,6 +240,9 @@ while error==-1:
     except Exception as erro:
         print(f'O valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
 
+
+
+
 #CHAMDA DE VARIÁVEIS NECESSÁRIAS PARA O CÁLCULO DA CURVA DE LUZ 
 Nx= estrela_.getNx() #Nx  e Ny necessarios para a plotagem do eclipse
 Ny= estrela_.getNy()
@@ -244,13 +250,44 @@ raioEstrelaPixel = estrela_.getRaioStar()
 estrelaManchada= estrela_.getEstrela()#retorna na verdade a estrela sem manchas para plotar no final
 #atribuição de variáveis dadas pelos parâmetros para que sejam plotadas.
 
+#iniciando o ECLIPSE 
+eclipse= Eclipse(Nx,Ny,raioEstrelaPixel,estrelaManchada,periodo,anguloInclinacao) #instancia o Eclipse 
+eclipse.geraTempoHoras()
+tempoHoras=eclipse.getTempoHoras() #gerar o tempo do Eclipse em Horas
 
+##################### INICIANDO A LUA ##########################
 
-error=-1 #tratando os erros em eclipse
-eclipse= Eclipse(Nx,Ny,raioEstrelaPixel,estrelaManchada) 
+error=-1 #tratando os erros em Lua
 while error==-1:
     try:
-        eclipse.criarEclipse(periodo, semiEixoRaioStar, anguloInclinacao, raioPlanetaRstar)
+        escolha= Validar('\033[1;35mDeseja adicionar luas em sua estrela? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá mancha ou não.
+        if escolha==1:
+            lua = True
+            quantidade= Validar('\033[1;35mDigite a quantidade de LUAS a serem adicionadas:\033[m')
+            quantidade=int(quantidade)
+            count=0
+            while count!=quantidade: #o laço ira rodar a quantidade de luas selecionada pelo usuario
+                print('\033[1;35m\n\n══════════════════ Parâmetros da LUA ',count+1,'═══════════════════\n\n\033[m')
+                # radius, mass, albedo, distance, raioPlanetaPixel, raioStar,tempoHoras
+                rmoon = Validar('Digite o raio da Lua em função do raio da estrela: ')
+                mass = Validar('Digite a massa da Lua: ')  #ESPECIFICAR UNIDADES
+                albedo = Validar('Digite o Albedo:')
+                distancia = Validar('Digite a distância da Lua em relação ao planeta:') #vai passar em km 
+                perLua = Validar('Digite o período da órbita da Lua:') #em dias 
+                raioPlanetaPixel = (raioPlanetaRstar)*(raioEstrelaPixel)
+                #instanciando LUA
+                moon = eclipse.criarLua(rmoon,mass,albedo,distancia,raioPlanetaPixel,raioStar,tempoHoras)
+                count+=1
+        else:
+            error=0    
+    except Exception as erro:
+        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+
+
+#inicia o calculo do eclipse com planetas, luas, manchas e o que o usuario desejou adicionar 
+while error==-1:
+    try:
+        eclipse.criarEclipse(semiEixoRaioStar, raioPlanetaRstar,lua)
         error=eclipse.getError()
     except Exception as erro:
         print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
@@ -261,8 +298,8 @@ print ("Tempo Total (Trânsito):",eclipse.getTempoTransito())
 tempoTransito=eclipse.getTempoTransito()
 #print("Curva Luz:",eclipse.getCurvaLuz())
 curvaLuz=eclipse.getCurvaLuz()
-#print("Tempo Horas:",eclipse.getTempoHoras())
-tempoHoras=eclipse.getTempoHoras()
+
+
 
 #Plotagem da curva de luz 
 pyplot.plot(tempoHoras,curvaLuz)
