@@ -49,10 +49,10 @@ parâmetro tempoHora:: tempo do transito em horas matriz
 raio= 373. #default (pixel)
 intensidadeMaxima=240 #default
 tamanhoMatriz = 856 #default
-raioStar=1.05 #raio da estrela em relacao ao raio do sol
+raioStar=0.117 #raio da estrela em relacao ao raio do sol
 raioStar=raioStar*696340 #multiplicando pelo raio solar em Km 
-coeficienteHum=0.405
-coeficienteDois=0.262
+coeficienteHum=0.65
+coeficienteDois=0.28
 
 
 #cria estrela
@@ -62,8 +62,8 @@ Nx= estrela_.getNx() #Nx  e Ny necessarios para a plotagem do eclipse
 Ny= estrela_.getNy()
 dtor = np.pi/180.  
 
-periodo = 1.4857108  # em dias
-anguloInclinacao = 87.2  # em graus
+periodo = 6.099 # em dias
+anguloInclinacao = 89.86  # em graus
 
 dec=int(input("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |"))
 if dec==1:
@@ -78,15 +78,15 @@ else:
     #multiplicando pelas UA (transformando em Km) e convertendo em relacao ao raio da estrela 
 
 
-raioPlanetaRstar = 1.312 #em relação ao raio de jupiter
+raioPlanetaRstar = 0.0819 #em relação ao raio de jupiter
 raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplicando pelo raio de jupiter em km 
 
 latsugerida = calculaLat(semiEixoRaioStar,anguloInclinacao)
 print("A latitude sugerida para que a mancha influencie na curva de luz da estrela é:", latsugerida)
 
 #manchas
-count=0
-quantidade=1 #quantidade de manchas desejadas
+count = 0
+quantidade = 0 #quantidade de manchas desejadas, se quiser acrescentar, mude essa variavel
 #cria vetores do tamanho de quantidade para colocar os parametros das manchas
 fa = [0.]*quantidade #vetor area manchas
 fi = [0.]*quantidade #vetor intensidade manchas
@@ -110,20 +110,40 @@ while count!=quantidade: #o laço ira rodar a quantidade de manchas selecionada 
     count+=1
 
 #print vetor de intensidade, longitude e area da mancha para testes
-print(fi)
-print(li)
-print(fa)
+print("Intensidades:",fi)
+print("Longitudes:",li)
+print("Areas:",fa)
 
-
+estrela = estrela_.getEstrela()
 #para plotar a estrela 
 #caso nao queira plotar a estrela, comentar linhas abaixo
-estrela = estrela_.getEstrela()
+if (quantidade>0): #se manchas foram adicionadas. plotar
+    estrela_.Plotar(tamanhoMatriz,estrela)
+
+#criando lua 
+lua = False #se nao quiser luas, mudar para False
+eclipse= Eclipse(Nx,Ny,raio,estrela)
 estrela_.Plotar(tamanhoMatriz,estrela)
+eclipse.geraTempoHoras()
+tempoHoras=eclipse.getTempoHoras()
+#instanciando LUA
+rmoon = 0.5 #em relacao ao raio da Terra
+rmoon = rmoon *6371 #multiplicando pelo R da terra em Km
+mass = 0.001 #em relacao a massa da Terra
+mass = mass * (5.972*(10**24))
+massPlaneta = 0.002 #em relacao ao R de jupiter
+massPlaneta = massPlaneta * (1.898 *(10**27)) #passar para gramas por conta da constante G
+G = (6.674184*(10**(-11)))
+perLua = 0.1 #em dias 
+distancia=((((perLua*24.*3600./2./np.pi)**2)*G*(massPlaneta+mass))**(1./3))/raioStar
+distancia = distancia/100
+moon = eclipse.criarLua(rmoon,mass,raio,raioStar,tempoHoras,anguloInclinacao,periodo,distancia)
+estrela = estrela_.getEstrela()
+
+
 
 #eclipse
-
-eclipse= Eclipse(Nx,Ny,raio,estrela) 
-eclipse.criarEclipse(periodo, semiEixoRaioStar, anguloInclinacao, raioPlanetaRstar)
+eclipse.criarEclipse(semiEixoRaioStar, raioPlanetaRstar,periodo,anguloInclinacao,lua)
 
 
 print ("Tempo Total (Trânsito):",eclipse.getTempoTransito()) 

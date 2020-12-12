@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 from matplotlib import pyplot
 from estrela_nv1 import estrela
 from verify import Validar
+import matplotlib.animation as animation
 
 
 import os
@@ -70,10 +71,16 @@ class Eclipse:
         tempoHoras = self.tempoHoras
         moon.moonOrbit(raioStar)
         Rmoon = moon.getRmoon()
+
+        #coleta de dados necessarias para a plotagem do eclipse
         self.xxm = moon.getxm()
         self.yym = moon.getym()
         self.Rmoon = Rmoon #em pixel 
         self.mass = mass
+        self.tamanhoMatriz= self.Nx
+        self.ppMoon = moon.getppMoon(self.tamanhoMatriz)
+        self.xl = moon.getxl()
+        self.yl = moon.getyl()
         return moon
         
 
@@ -89,10 +96,8 @@ class Eclipse:
 
         dtor = np.pi/180.
         '''Inicio do calculo do TEMPO TOTAL de trânsito através dos parâmetros passados ao planeta.'''
-        #default
-        anguloObliquidade = 0.
-        anguloRot = 0.
-        #default
+        anguloObliquidade = 0. #default
+        anguloRot = 0.  #default
         semiEixoPixel = self.semiEixoRaioStar * self.raioEstrelaPixel
         raioPlanetaPixel = self.raioPlanetaRstar * self.raioEstrelaPixel
 
@@ -132,29 +137,41 @@ class Eclipse:
         # orbita projetada do planeta
         xplaneta = semiEixoPixel*np.cos(tetaPos) + tamanhoMatriz/2
         yplaneta = semiEixoPixel*np.sin(tetaPos)*np.cos(self.anguloInclinacao*dtor) + tamanhoMatriz/2       
-
-
-
         if(self.anguloInclinacao > 90.): 
             yplaneta = -semiEixoPixel*np.sin(tetaPos)*np.cos(self.anguloInclinacao*dtor) + tamanhoMatriz/2
 
-
-        #criar verificacao do PP
         pp, = np.where((xplaneta >= 0) & (xplaneta < tamanhoMatriz) & (yplaneta >= 0) & (yplaneta < tamanhoMatriz))    # only points within the matrix
         xplan = xplaneta[pp]
         yplan = yplaneta[pp]
+
+
+        #seleciona a maior orbita para que a curva de luz seja plotada de maneira correta (observando ela inteira)
+        if(lua == True):
+            if (len(pp)>len(self.ppMoon)):
+                rangeloop = pp
+            else: 
+                rangeloop = self.ppMoon
+                xplan = xplaneta[self.ppMoon]
+                yplan = yplaneta[self.ppMoon]
+        else:
+            rangeloop = pp
+
         ''''
         Curva de Luz e normalização da intensidade
         '''
         # maximo da curva de luz, usado na normalizacao da intensidade
         maxCurvaLuz = np.sum(self.estrelaManchada) 
 
-
-
         '''
         Criação da matriz para plotagem:
         '''
-        for i in range(0,len(pp)):
+        #criacao de variaveis para plotagem da animacao 
+        fig = plt.figure()
+        ims = []
+        j = 0 #variavel auxiliar utilizada para plotagem da animacao 
+        plota = True #variavel FLAG que indica quando armazenar a imagem do PLOT 
+        print("\nAguarde um momento, a animacao do trânsito está sendo gerada.\n")
+        for i in range(0,len(rangeloop)):
 
                         plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. ##matriz de n por n
                         x0 = xplan[i] 
@@ -165,8 +182,8 @@ class Eclipse:
                         ii = np.where((kk/tamanhoMatriz-y0)**2+(kk-tamanhoMatriz*np.fix(kk/tamanhoMatriz)-x0)**2 <= raioPlanetaPixel**2)
                     
                         plan[ii]=0.
-                        ### adicionando luas ###
 
+                        ### adicionando luas ###
                         if (lua == True): #criou luas 
                             xm = x0-self.xxm[i]         
                             ym = y0-self.yym[i]   
@@ -174,18 +191,19 @@ class Eclipse:
                             plan[ll]=0.
 
                         #####      
-                        plan = plan.reshape(self.tamanhoMatriz, self.tamanhoMatriz)
+                        plan = plan.reshape(self.tamanhoMatriz, self.tamanhoMatriz) #posicao adicionada na matriz
+                        self.curvaLuz[rangeloop[i]]=np.sum(self.estrelaManchada*plan,dtype=float)/maxCurvaLuz
 
-
-                        self.curvaLuz[pp[i]]=np.sum(self.estrelaManchada*plan,dtype=float)/maxCurvaLuz
-
-                        if(i == len(pp)/2):
+                        if(plota and self.curvaLuz[rangeloop[i]] != 1 and j<200):
                             plt.axis([0,self.Nx,0,self.Ny])
-                            plt.imshow(len(self.estrelaManchada)*plan,cmap="pink")
-                            plt.show()
-
-            
-
+                            im = plt.imshow(self.estrelaManchada*plan,cmap="gray", animated = True)
+                            ims.append([im]) #armazena na animação os pontos do grafico (em imagem)
+                            j+=1
+                        plota = not(plota) #variavel auxiliar que seleciona o intervalo correto para plotagem
+        
+        ani =animation.ArtistAnimation(fig, ims, interval=50, blit=True,repeat_delay=1000)
+        plt.show()
+        #ani.save('animacao_transito.gif',writer="PillowWriter") #salva o gif gerado na raiz do arquivo, para utilizacao do usuario
 
         error=0
         self.error=error
@@ -206,9 +224,12 @@ class Eclipse:
         seu valor de inicio (que é -1)
         '''
         return self.error
+    def setEstrela(self,estrela):
+        self.estrelaManchada = estrela
+
     
 
-    ############ adição de luas teste ###########
+    ############ adição de luas ###########
 class Orbit (object):
     def __init__(self, semiaxis, period, inclinationAngle, obliquityAngle, eccentricity):
         self.semiaxis = semiaxis #(in Rstar)
@@ -224,17 +245,11 @@ class Orbit (object):
 
 class Moon:
     
-    #pm = 0.0751017821823 #moon period
-    #rm = 0.0288431223213 # moon radius
-    #dm = 4.10784266075 # moon distance
-    #tm0 = 1.15612181491 # moon first transit time
-    #kind = 'big-fst_'
-    
     pos = np.random.choice([-1, 1])
 
     def __init__(self, radius, mass, raioEstrelaPixel, anguloInclinacao ,periodo, raioPlanetaPixel,tempoHoras,distancia):
         
-        tm0 = np.pi # moon first transit time
+        tm0 = 0 # moon first transit time
         self.radius = radius
         self.mass = mass
         self.raioEstrelaPixel = raioEstrelaPixel
@@ -252,11 +267,11 @@ class Moon:
         self.Rmoon = self.radius / raioStar
         self.RmoonPixel = self.Rmoon * self.raioEstrelaPixel
         
-        dmoon = self.distancia * self.raioEstrelaPixel
+        self.dmoon = self.distancia * self.raioEstrelaPixel
         
-        theta_m = 2*np.pi * self.tempoHoras / (self.periodo*24.) - self.tm0
-        self.xm = dmoon * np.cos(theta_m)
-        self.ym = dmoon * np.sin(theta_m) * np.cos(self.anguloInclinacao) 
+        self.theta_m = 2*np.pi * self.tempoHoras / (self.periodo*24.) - self.tm0
+        self.xm = self.dmoon * np.cos(self.theta_m)
+        self.ym = self.dmoon * np.sin(self.theta_m) * np.cos(self.anguloInclinacao) 
         
         #pair = []
         ##pair.append(self.xm)
@@ -274,3 +289,22 @@ class Moon:
 
     def getym(self):
         return self.ym
+
+    def getppMoon(self,tamanhoMatriz):
+        #calculando a orbita projetada da lua
+        dtor = np.pi/180.
+        xlua = self.xm + tamanhoMatriz/2
+        ylua = self.ym + tamanhoMatriz/2
+        if(self.anguloInclinacao > 90.): 
+            ylua = -self.dmoon*np.sin(self.theta_m)*np.cos(self.anguloInclinacao*dtor) + tamanhoMatriz/2
+
+        #orbita projetada da Lua
+        ppMoon, = np.where((xlua >= 0) & (xlua < tamanhoMatriz) & (ylua >= 0) & (ylua < tamanhoMatriz)) 
+        self.xl = xlua[ppMoon]
+        self.yl = ylua[ppMoon]
+        return ppMoon   
+    
+    def getxl(self):
+        return self.xl
+    def getyl(self):
+        return self.yl

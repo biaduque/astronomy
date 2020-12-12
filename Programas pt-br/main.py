@@ -92,7 +92,7 @@ while error==-1: #enquanto o erro for -1, o while irá rodar, ou seja, o usuario
 Nx= estrela_.getNx() #Nx  e Ny necessarios para a plotagem do eclipse
 Ny= estrela_.getNy()
 raioEstrelaPixel = estrela_.getRaioStar()
-estrelaManchada= estrela_.getEstrela()#retorna na verdade a estrela sem manchas para plotar no final
+estrelaManchada = estrela_.getEstrela()#retorna na verdade a estrela sem manchas para plotar no final
 #atribuição de variáveis dadas pelos parâmetros para que sejam plotadas.
 
 
@@ -203,9 +203,11 @@ def criandoPlanetas(estrela_,planetas,qtd):
                     estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #recebe a escolha de se irá receber manchas ou não
                     error=estrela_.getError()
                     count+=1
-                print(fi)
-                print(li)
-                print(fa)
+                print("Intensidades:",fi)
+                print("Longitudes:",li)
+                print("Areas:",fa)
+                estrela = estrela_.getEstrela()
+                eclipse.setEstrela(estrela) #passando a estrela para o eclipse
             else:
                 estrela = estrela_.getEstrela()  # armazena o que esta guardado no objeto estrela para sobrescrever
                 error=0    
@@ -281,7 +283,7 @@ def criandoPlanetas(estrela_,planetas,qtd):
         pyplot.axis([-tempoTransito/2,tempoTransito/2,min(curvaLuz)-0.001,1.001])                       
         pyplot.show()
 
-
+#############################################################################################################
 #cria objeto do grafico
 #passa pra main esse objeto 
 planetas = Validar("Digite a quantidade de planeta(s) desejado(s): ")
