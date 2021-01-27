@@ -50,7 +50,7 @@ intensidadeMaxima=240.
 error=-1
 while error==-1:
     try:
-        x=int(input('Choose an option!\n1. Plot star example |2. Add parameters to the star:'))
+        x=int(input('Choose an option!\n1. Plot example star |2. Add parameters to the star:'))
         if x==1:
             raioStar=1.
         #limb darkening coefficients
