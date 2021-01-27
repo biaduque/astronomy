@@ -35,225 +35,261 @@ eclipse: eclipse class that receives a star and calculates its light curve
 print('''\033[1;36m
 ╔═════════════»»»   Example Star  «««════════════╗
 ║-PIXEL RADIUS: 373                              ║      
-║-INTENSIDADE DO CENTRO DA ESTRELA: 240          ║
-║  LIMBO DARKING COEFFICIENT                     ║
+║-INTENSITY OF THE STAR'S CENTER: 240            ║
+║ LIMB DARKENING COEFFICIENT                     ║
 ║-u1: 0.5                                        ║
-║-u2:0.3                                         ║
+║-u2: 0.3                                        ║
 ╚════════════════════════════════════════════════╝\033[m\n\n''')
-#default
-raio = 373.# star radius in pixels
-intensidadeMaxima=240.#star center intensity (or maximum intensity)
 
-#star creation step
-error=-1 #error = -1 for the program to repeat the step in case an error occurs
-#as long as the error is -1, the while will run, that is, the user will have to redo the process if there is an error
+#default
+#star's radius in pixel
+raio = 373.
+#intensity of the star's center (or maximum intensity)
+intensidadeMaxima=240.
+#starting data collection of the star parameters
+error=-1
 while error==-1:
     try:
         x=int(input('Choose an option!\n1. Plot star example |2. Add parameters to the star:'))
         if x==1:
             raioStar=1.
-        # limbo dimming coefficients
+        #limb darkening coefficients
             coeficienteHum = 0.5
             coeficienteDois = 0.3
         elif x==2:
-            raioStar= Validar("Star radius (in relation to the sun's ray):")
-            raioStar=raioStar*696340 #multiplying by the solar ray in Km
-            coeficienteHum = float(input('Limbo Darking Coefficient (u1):'))
-            coeficienteDois = float(input('Limbo Darking Coefficient (u2):'))
+            raioStar= Validar("Star's radius (in relation to the sun's radius):")
+            raioStar=raioStar*696340 #multiplying by the sun's radius in km
+            coeficienteHum = float(input('Limb darkening coefficient (u1):'))
+            coeficienteDois = float(input('Limb darkening coefficient (u2):'))
 
-        x=int(input('Matrix size set to 856, do you want to change it? 1.Yes 2.No:'))
+        #creating an if for recommended settings
+        x=int(input("Matrix's size set to 856. Do you want to change it? 1.Yes 2.No :"))
         if x== 1:
-            tamanhoMatriz=int(input('Enter the Matrix size:'))
+            tamanhoMatriz=int(input("Enter the matrix's size:"))
         elif x==2:
             tamanhoMatriz = 856
+        # Construction of the star with limb darkening
+        # Creation of the star object inside the star.
+        error=0 #if it passes all steps, error=0 and exits the loop
+    except Exception as erro:
+        print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m') #returns the error's type
 
 
-        # Construction of the star with limbo darkening
-        # Creation of the star object inside a star.
+error=-1 #error handling
+#STAR
+while error==-1: #while error is still -1, the while will still run, meaning that the user will have to redo the process if it still have an error
+    #if it goes through all inputs without errors, the function will return 0, and thus it will exit the loop and proceed to the next step
+    try:
         estrela_ = estrela(raio,intensidadeMaxima,coeficienteHum,coeficienteDois,tamanhoMatriz)
-        error=estrela_.getError() # if you pass all steps, error = 0 and exit the loop
-        estrela=estrela_.getEstrela()
-        estrela._Plotar(tamanhoMatriz,estrela)
+        estrela = estrela_.getEstrela()
+        estrela_.Plotar(tamanhoMatriz,estrela)
+        error=estrela_.getError() #if there is no error, it will receive 0, which will make it exit the loop
     except Exception as erro:
-         print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m') #retorna o tipo de erro
+        print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m') #returns the error's type
 
-
-##################### STARTING ECLIPSE ##########################
-
-#planet, traffic, curve
-print('''\033[1;33m
-        ╔══════════════════════════»»» EXAMPLE ECLIPSE «««══════════════════════════════╗
-        ║- PERIOD: 10 (in days)                                                         ║           
-        ║- SEMI AXIS (in relation to the radius of the star): 15                      	║
-        ║- INCLINATION ANGLE (in degrees):88                                           	║
-        ║- PLANET RADIUS (in relation to the radius of the star):0.1                   	║
-        ╚═══════════════════════════════════════════════════════════════════════════════╝\033[m'''
-        )
-dtor = np.pi/180.  
-aux= True
-while aux == True: 
-    try:
-        x=int(input('1.Example Eclipe. 2.Change the parameters:')) #choice of how to pass the eclipse parameters
-        aux= False
-    except Exception as erro:
-        print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
-                
-if x==1:
-#default entries
-    periodo = 10.  # in days
-    semiEixoRaioStar = 15   #in Rstar units
-    anguloInclinacao = 88.  # in degrees
-    raioPlanetaRstar = 0.1   #in Rstar units     
-            
-elif x==2:
-    aux= True
-    while aux == True:
-        try:
-            periodo = Validar("Period (in days):")
-            anguloInclinacao = float(input('Inclination Angle (in degrees):')) 
-            raioPlanetaRstar = Validar('Planet Radius (in relation to the Júpiter radius:)')
-            raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplying by the radius of jupiter in km
-
-            dec=int(input("Do you want to calculate the planet's Orbital semi-axis (a) using the 3rd KEPLER LAW? 1. Yes 2.No |"))
-            if dec==1:
-                mass= Validar("Enter the mass of the star in relation to the mass of the sun (MassSun):")
-                semieixoorbital = calSemiEixo(periodo,mass) #calculating with 3rd Kepler Law
-                semiEixoRaioStar = ((semieixoorbital/1000)/raioStar)
-                #turns to km to do in relation to the radius of the star
-            else:
-                semiEixoRaioStar = Validar('Semi-axis (in AU:)')
-                semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
-                #multiplying by AU (transforming into Km) and converting in relation to the radius of the star
-            
-            while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
-                print('Planet does not eclipse star (change inclination angle)')
-                anguloInclinacao = float(input('Inclination Angle:')) 
-            
-            aux= False
-        
-        except Exception as erro:
-            print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
-                
-
-#STAR SPOT
-error=-1
-while error==-1:
-    try:
-        escolha= Validar('\033[1;35mDo you want to add spots on your star? 1. Yes 2. No |\033[m')  #defines the choice, whether there will be stain or not.
-        if escolha==1:
-            latsugerida = calculaLat(semiEixoRaioStar,anguloInclinacao)
-            print("The suggested latitude for the spot to influence the star's light curve is:", latsugerida)
-            quantidade= Validar('\033[1;35mEnter the number of spots to add:\033[m')
-            quantidade=int(quantidade)
-            count=0
-            #create quantity size vectors to place the stain parameters
-            fa = [0.]*quantidade #spots area vector
-            fi = [0.]*quantidade #vector intensity spots
-            li = [0.]*quantidade #longitude spota vector
-            while count!=quantidade: #the loop will rotate the amount of spots selected by the user
-                print('\033[1;35m\n\n══════════════════ Spot Parameters',count+1,'═══════════════════\n\n\033[m')
-                r = Validar('Enter the radius of the spot as a function of the radius of the star: ')
-                
-                intensidadeMancha= Validar('Enter the intensity of the spot as a function of the maximum intensity of the star:')
-                fi[count]=intensidadeMancha
-                lat=float(input('Spot latitude:'))
-
-                longt=float(input('Spot length:'))
-                li[count]=longt
-
-                raioMancha= r*raioStar
-                area = np.pi *(raioMancha**2)
-                fa[count] = area
-
-                estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #receives the sspots parameters
-                #stores what is stored in the star object to overwrite
-                error=estrela_.getError()
-                count+=1
-            print(fi)
-            print(li)
-            print(fa)
-        else:
-            estrela = estrela_.getEstrela()  # stores what is stored in the star object to overwrite
-            error=0    
-    except Exception as erro:
-        print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
-
-estrela=estrela_.getEstrela()
-estrela._Plotar(tamanhoMatriz,estrela)
-
-# Faculas in production
-error=-1
-while error==-1:
-    try:
-        escolha= Validar('\033[1;92mDo you want to add Fáculas to your star? 1. Yes 2. No|')
-        # var escolha defines the choice, whether facula or not.
-        if escolha==1:
-            quantidade= Validar('Choice not yet programmed')
-            count=0
-            while count!=quantidade:
-                print('*****Parâmetros da fácula ',count+1,'.*****\033[m')
-                estrela = estrela_.faculas(estrela,count) #facula receives the star now updated
-                error = estrela_.getError()
-                count+=1
-        else:
-            estrela = estrela_.getEstrela()  # stores what is stored in the star object to overwrite
-            error=0    
-    except Exception as erro:
-        print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
-
-#STAR FLARES in production
-error=-1
-while error==-1:
-    try:
-        #flare parameters 
-        escolha = Validar('Do you want to add flares to your star? 1. Yes 2. No |')
-        
-        #var escolha defines the choice, whether there will be flares or not.
-        if escolha==1:
-            quantidade= Validar('Change not yet programmed')
-            count=0
-            while count!=quantidade:
-                print('***** Flare Parameters ',count+1,'.*****\033[m')
-                estrela = estrela_.getEstrela() #flare receives the star now updated
-                error = estrela_.getError()
-                count+=1
-        else:
-            estrela = estrela_.getEstrela() #flare receives the star now updated
-            error=0    
-    except Exception as erro:
-        print(f'The value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
-#CALL OF NECESSARY VARIABLES FOR CALCULATING THE LIGHT CURVE
-Nx= estrela_.getNx() #Nx and Ny needed for plotting the eclipse
+#CALLING NECESSARY VARIABLES TO CALCULATE THE LIGHT CURVE
+Nx= estrela_.getNx() #Nx and Ny are needed for plotting the eclipse
 Ny= estrela_.getNy()
 raioEstrelaPixel = estrela_.getRaioStar()
-estrelaManchada= estrela_.getEstrela()#actually returns the spotless star to plot at the end
-# assignment of variables given by the parameters to be plotted.
+estrelaManchada = estrela_.getEstrela() #returns the spotless star for plotting later
+#variables assignment given by the parameters so that they can be plotted
 
 
+#instantiating the ECLIPSE
+eclipse= Eclipse(Nx,Ny,raioEstrelaPixel,estrelaManchada) #instantiate the Eclipse
 
-error=-1 #handling errors in eclipse
-eclipse= Eclipse(Nx,Ny,raioEstrelaPixel,estrelaManchada) 
-while error==-1:
-    try:
-        eclipse.criarEclipse(periodo, semiEixoRaioStar, anguloInclinacao, raioPlanetaRstar)
-        error=eclipse.getError()
-    except Exception as erro:
-        print(f'\033[0;31mThe value entered is invalid. Please type again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+##################### Main that allows the creation of more than one planet, each one with their own moon #####################
+def criandoPlanetas(estrela_,planetas,qtd):
 
-#PRINTED COMMENTS BELOW FOR TESTING ONLY
+    '''
+    Function used to the addition of more than one planet that orbits the star. This function
+    runs inside a while according to the amount of planets needed by the user
+    parameter_ :: star object
+    planetas parameter :: amount of planets to be added
+    qtd parameter :: initial variable = 0 that gets incremented each loop interaction (used as auxiliary for verifications
+                     inside the function)
+    '''
 
-print ("Total Time (Transit):",eclipse.getTempoTransito()) 
-tempoTransito=eclipse.getTempoTransito() #returns transit time
+    ##################### STARTING THE ECLIPSE ##########################
 
-#print("Curva Luz:",eclipse.getCurvaLuz())
+    #planet,transit,light curve
+    print('''\033[1;33m
+            ╔══════════════════════════»»» EXAMPLE ECLIPSE «««══════════════════════════════╗
+            ║- PERIOD: 10 (in days)                                                         ║           
+            ║- SEMI AXIS (in relation to the radius of the star): 15                       	║
+            ║- TILT ANGLE (in degrees): 88                                              	║
+            ║- PLANET'S RADIUS (in relation to the star's radius): 0.1                     	║
+            ╚═══════════════════════════════════════════════════════════════════════════════╝\033[m'''
+            )
+    dtor = np.pi/180.  
+    aux= True
+    while aux == True: 
+        try:
+            x=int(input('1.Example Eclipse. 2.Change the parameters:')) #choice of how to pass the eclipse parameters
+            aux= False
+        except Exception as erro:
+            print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+                    
+    if x==1:
+    #default entries
+        periodo = 10.  # in days
+        semiEixoRaioStar = 15   # in Rstar units
+        anguloInclinacao = 88.  # in degrees
+        raioPlanetaRstar = 0.1   # in Rstar units
+                
+    elif x==2:
+        aux= True
+        while aux == True:
+            try:
+                periodo = Validar("Period:")
+                anguloInclinacao = float(input('Tilt angle:')) 
+                raioPlanetaRstar = Validar("Planet's radius (in relation to Jupiter's radius):")
+                raioPlanetaRstar = (raioPlanetaRstar*69911)/raioStar #multiplying by jupiter's radius in km
+                anom = float(input("Enter the Anomaly: (Default = 0)"))
+                ecc = float(input("Enter the Eccentricity: (Default = 0)"))
 
-curvaLuz=eclipse.getCurvaLuz() #returns light curve (matrix)
+                dec=int(input("Do you want to calculate the planet's Orbital semi-axis using KEPLER'S 3RD LAW? 1.Yes 2.No |"))
+                if dec==1:
+                    mass= Validar("Enter the mass of the star in relation to the mass of the sun (MassSun):")
+                    semieixoorbital = calSemiEixo(periodo,mass)
+                    print("Result = ", semieixoorbital)
+                    semiEixoRaioStar = ((semieixoorbital/1000)/raioStar)
+                    #turns in km to calculate in relation to the star's radius
+                else:
+                    semiEixoRaioStar = Validar('Semi axis (in AU:)')
+                    # in Rstar units
+                    semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
+                    #multiplying by AU (turning into Km) and converting in relation to the star's radius
+                
+                while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
+                    print('Planet does not eclipse the star. Please, change the tilt angle.')
+                    anguloInclinacao = float(input('Tilt angle:')) 
+                
+                aux= False
+            
+            except Exception as erro:
+                print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+                    
 
-#print("Tempo Horas:",eclipse.getTempoHoras())
+    #STAR'S SPOT
+    error=-1
+    while error==-1:
+        try:
+            escolha= Validar('\033[1;35mDo you want to add spots on your star? 1. Yes 2. No |\033[m')  #defines if there will be spots on the star
+            if escolha==1:
+                latsugerida = calculaLat(semiEixoRaioStar,anguloInclinacao)
+                print("The suggested latitude for the spot to influence the star's light curve is:", latsugerida)
+                quantidade= Validar('\033[1;35mEnter the number of spots to add:\033[m')
+                quantidade=int(quantidade)
+                count=0
+                #create quantity size vectors to put the spot's parameters
+                fa = [0.]*quantidade #spot's area vector
+                fi = [0.]*quantidade #spot's intensity vector
+                li = [0.]*quantidade #spot's longitude vector
+                while count!=quantidade: #the loop will run the amount of spots selected by the user
+                    print("\033[1;35m\n\n══════════════════ Spot ",count+1,"'s parameters ═══════════════════\n\n\033[m")
+                    r = Validar('Enter the radius of the spot in relation to the radius of the star: ')
+                    
+                    intensidadeMancha= Validar('Enter the intensity of the spot in relation to the maximum intensity of the star:')
+                    fi[count]=intensidadeMancha
+                    lat=float(input("Spot's latitude:"))
 
-tempoHoras=eclipse.getTempoHoras() #returns transit time in hours
+                    longt=float(input("Spot's longitude:"))
+                    li[count]=longt
 
-#Plot of light curve 
-pyplot.plot(tempoHoras,curvaLuz)
-pyplot.axis([-tempoTransito/2,tempoTransito/2,min(curvaLuz)-0.001,1.001])                       
-pyplot.show()
+                    raioMancha= r*raioStar
+                    area = np.pi *(raioMancha**2)
+                    fa[count] = area
+
+                    estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #gets the choice if there'll be spots or not
+                    error=estrela_.getError()
+                    count+=1
+                print("Intensities:",fi)
+                print("Longitudes:",li)
+                print("Areas:",fa)
+                estrela = estrela_.getEstrela()
+                eclipse.setEstrela(estrela) #Passing the star to the eclipse
+            else:
+                estrela = estrela_.getEstrela()  # stores what is saved in the star object to overwrite
+                error=0    
+        except Exception as erro:
+            print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+
+
+    estrela_.Plotar(tamanhoMatriz,estrela)
+    eclipse.geraTempoHoras()
+    tempoHoras=eclipse.getTempoHoras() #generates the Eclipse's time (in hours)
+
+    ##################### STARTING THE MOON ##########################
+
+    error=-1 #error handling
+    lua = False
+    while error==-1:
+        try:
+            escolha= Validar('\033[1;35mDo you want to add moons to this Planet? 1. Yes 2. No |\033[m')  #defines if there will be moons around this planet
+            if escolha==1:
+                lua = True
+                quantidade= Validar('\033[1;35mEnter the number of MOONS to add:\033[m')
+                quantidade=int(quantidade)
+                count=0
+                while count!=quantidade: #the loop will run the amount of moons selected by the user
+                    print("\033[1;35m\n\n══════════════════ MOON ",count+1,"'s parameters ═══════════════════\n\n\033[m")
+                    # radius, mass,distance, raioPlanetaPixel, raioStar,tempoHoras
+                    rmoon = Validar('Enter the radius of the moon in relation to the radius of the Earth: ')
+                    rmoon = rmoon *6371 #multiplying by Earth's radius in km
+                    mass = Validar("Enter the moon's mass (in Earth's mass units): ")  
+                    mass = mass * (5.972*(10**24))
+                    massPlaneta = Validar("Enter the Planet's mass (in Jupiter's mass units): ") #must be converted to kg
+                    massPlaneta = massPlaneta * (1.898 *(10**27)) #turn into grams because of the gravitational constant
+                    G = (6.674184*(10**(-11)))
+                    perLua = Validar("Enter the moon's orbit period:") #in days
+                    distancia=((((perLua*24.*3600./2./np.pi)**2)*G*(massPlaneta+mass))**(1./3))/raioStar
+                    distancia = distancia/100
+
+                    #x1000**(1/3)/10ˆ5 for the conversion because of the G parameter
+                    print("Distance = ",distancia)
+                    print("rmoon = ",rmoon/raioStar)
+                    raioPlanetaPixel = (raioPlanetaRstar)*(raioEstrelaPixel)
+                    #instantiating moon
+                    moon = eclipse.criarLua(rmoon,mass,raioPlanetaPixel,raioStar,tempoHoras,anguloInclinacao,periodo,distancia)
+                    estrela = estrela_.getEstrela()
+                    count+=1
+                break      
+            else:
+                estrela = estrela_.getEstrela()
+                error=0    
+        except Exception as erro:
+            print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+
+    error = -1
+    #starts the calculation of the eclipse with planets, moons, spots and whatever the user added
+    while error==-1:
+        try:
+            eclipse.criarEclipse(semiEixoRaioStar, raioPlanetaRstar,periodo,anguloInclinacao,lua,ecc,anom)
+            error=eclipse.getError()
+        except Exception as erro:
+            print(f'\033[0;31mThe value entered is invalid. Please enter the value again. The type of problem encountered was{erro.__class__}\n\n\033[m')
+
+    #Do you want to print the light curve now? add option
+    decisao = Validar("Do you want to print the light curve now? 1.YES | 2.NO: ")
+    if (decisao==2 and qtd!=planetas-1):
+        print("\033[1;33mThe next planet can be added :) \033[m")
+    else:
+        print ("Total Time (Transit):",eclipse.getTempoTransito()) 
+        tempoTransito=eclipse.getTempoTransito()
+        #print("Light Curve:",eclipse.getCurvaLuz())
+        curvaLuz=eclipse.getCurvaLuz()
+        #Plotting of the light curve alone
+        pyplot.plot(tempoHoras,curvaLuz)
+        pyplot.axis([-tempoTransito/2,tempoTransito/2,min(curvaLuz)-0.001,1.001])                       
+        pyplot.show()
+
+#############################################################################################################
+#create graph's object
+#pass this object to the main
+planetas = Validar("Enter the amount of desired planets: ")
+qtd = 0
+while (qtd!= planetas):
+    criandoPlanetas(estrela_,planetas,qtd)
+    qtd+=1 
+#plots the orbit of the added planets

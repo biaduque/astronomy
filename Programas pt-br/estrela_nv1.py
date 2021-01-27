@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 from verify import Validar
+import random
 
 
 class estrela:
@@ -48,6 +49,7 @@ class estrela:
         self.coeficienteHum=coeficienteHum
         self.coeficienteDois=coeficienteDois
         self.tamanhoMatriz=tamanhoMatriz
+        #self.colors = ["gray","pink","hot"]
         error=0
         self.estrela = [[ 0.0 for i in range(self.tamanhoMatriz)] for j in range(self.tamanhoMatriz)]
 
@@ -61,6 +63,8 @@ class estrela:
         self.error=error
         self.Nx = self.tamanhoMatriz
         self.Ny = self.tamanhoMatriz
+        #self.color = random.choice(self.colors)
+        self.color = "hot"
         #Plotar(self.tamanhoMatriz,self.estrela)
     
     #######  inserir manchas
@@ -100,7 +104,7 @@ class estrela:
         xs=self.raio*np.cos(self.latitudeMancha)*np.sin(self.longitudeMancha)
         anguloHelio=np.arccos(np.cos(self.latitudeMancha)*np.cos(self.longitudeMancha))
 
-                
+        
         # efeito de projecao pela mancha estar a um anguloHeliocentrico do centro da estrela - elipcidade
         yy = ys + self.Ny/2 # posicao em pixel com relacao à origem da matriz
         xx = xs + self.Nx/2 # posicao em pixel com relacao à origem da matriz
@@ -207,5 +211,5 @@ class estrela:
         Nx = tamanhoMatriz
         Ny = tamanhoMatriz
         plt.axis([0,Nx,0,Ny])
-        plt.imshow(estrela,cmap="gray")
+        plt.imshow(estrela,self.color)
         plt.show()

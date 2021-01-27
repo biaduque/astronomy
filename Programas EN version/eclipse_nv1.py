@@ -20,136 +20,241 @@ check: function created to validate entries, for example, non-floating numbers /
 '''
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from matplotlib import pyplot
 from star_nv1 import estrela
 from verify import Validar
+#from keplerAux import keplerfunc  # auxiliary library in case of kepler library malfunction
+import matplotlib.animation as animation
+import kepler # library to calculate the eccentric orbits (pip install kepler)
+import os
 
 class Eclipse:
-    '''
-  Creation of the eclipse class, which will return the traffic light curve of the planet "surrounding the star
 
-
-     **** parameters assigned to the planet ****
-     : periodo parameter: planet's rotation period
-     : SemiEixoRaioStar parameter: planet's semi axis  in relation to the star's radius
-     : anguloInclination parameter: planet's tilt angle
-     : raioPlanetaRstar parameter: planet's radius
-    '''
+   
     def __init__(self,Nx,Ny,raioEstrelaPixel,estrelaManchada):
+        
 
+        '''
+        :Nx and Ny parameters: star's matrix's size 
+        :raioEstrelaPixel parameter: star's radius in pixel 
+        :estrelaManchada parameter: STAR object is used as estrelaManchada after spots are inserted
+        '''
         self.Nx = Nx
         self.Ny = Ny
         self.raioEstrelaPixel = raioEstrelaPixel
         self.estrelaManchada = estrelaManchada
+        
+        # OUTPUT
+        curvaLuz =[ 1.0 for i in range(self.Nx)]
+        self.curvaLuz = curvaLuz
+
+    def geraTempoHoras(self):
+        '''
+        Function called in Main to calculate the transit's time in hours
+        '''
+        x=int(input("Time period=1. Do you want to change it? 1. YES | 2. NO:"))
+        if x ==1:
+            self.intervaloTempo=float(input('Enter the Time period in minutes:'))
+        elif x==2:
+            self.intervaloTempo = 1.   # in minutes
 
 
-    def criarEclipse(self, periodo, semiEixoRaioStar, anguloInclinacao, raioPlanetaRstar):
-        self.periodo = periodo
+        self.tamanhoMatriz= self.Nx #Nx or Ny
+        tempoHoras = (np.arange(self.tamanhoMatriz)-self.tamanhoMatriz/2)*self.intervaloTempo/60.   # in hours
+        self.tempoHoras= tempoHoras
+
+    # from the moment when the moon is instanced in main, these objects become class' objects with a self object.
+    def criarLua(self, raioM, massM, raioPlanetaPixel, raioStar,tempoHoras,anguloInclinacao,periodo,distancia):
+        moon = Moon(raioM, massM, self.raioEstrelaPixel,anguloInclinacao ,periodo, raioPlanetaPixel, self.tempoHoras,distancia)
+        moon.moonOrbit(raioStar)
+        Rmoon = moon.getRmoon()
+
+        #data collect, which is necessary to plot the eclipse
+        self.xxm = moon.getxm()
+        self.yym = moon.getym()
+        self.Rmoon = Rmoon #in pixel 
+        self.massM = massM
+        self.tamanhoMatriz= self.Nx
+        #collecting moon's data
+        self.ppMoon = moon.getppMoon(self.tamanhoMatriz)
+        self.xl = moon.getxl()
+        self.yl = moon.getyl()
+        return moon
+        
+
+
+    def criarEclipse(self,semiEixoRaioStar, raioPlanetaRstar,periodo,anguloInclinacao,lua,ecc,anom):
+
+        '''
+        Creation of eclipse class, which will return the transit's light curve of the planet surrounding the star
+
+
+        **** parameters assigned to the planet ****
+        :periodo parameter: planet's rotation period
+        :SemiEixoRaioStar parameter: planet's semi axis in relation to star's radius
+        :anguloInclinacao parameter: planet's tilt angle
+        :raioPlanetaRstar parameter: planet's radius in relation to star's radius
+        :lua parameter: moon that orbits the planet (True or False)
+        :ecc parameter: eccentricity of the planet's orbit
+        :anom parameter: anomaly of the planet's orbit
+        '''
+
+
+        intervaloTempo = self.intervaloTempo
+        tamanhoMatriz = self.tamanhoMatriz
         self.semiEixoRaioStar = semiEixoRaioStar
-        self.anguloInclinacao = anguloInclinacao
         self.raioPlanetaRstar = raioPlanetaRstar
+        self.periodo = periodo
+        self.anguloInclinacao = anguloInclinacao
 
         dtor = np.pi/180.
-        '''Calculation's start of the ENTIRE transit TIME using parameters assigned to the planet.'''
-        #default
-        anguloObliquidade = 0.
-        anguloRot = 0.
-        #default
         semiEixoPixel = self.semiEixoRaioStar * self.raioEstrelaPixel
-        raioPlanetaPixel = self.raioPlanetaRstar * self.raioEstrelaPixel
 
-        # latitude of projected transit, for zero obliquity
-        latitudeTransito = -np.arcsin(self.semiEixoRaioStar*np.cos(anguloInclinacao*dtor))/dtor # latitude Sul (arbitraria)
-        # transit time in hours
-        duracaoTransito=2 * (90.-np.arccos((np.cos(latitudeTransito*dtor))/self.semiEixoRaioStar)/dtor)*self.periodo/360*24. 
-        tempoTotal = 3 * duracaoTransito
+        '''Starting the calculation of the ENTIRE transit time using parameters assigned to the planet.'''
 
-        x=int(input("Time period = 1. Do you want to change? 1. YES | 2. NO:"))
-        if x ==1:
-            intervaloTempo=float(input('Enter the time interval in minutes:'))
-        elif x==2:
-            intervaloTempo = 1.   #in minutes
+        #ecc = 0. #default
+        #anom = 0.  #default
 
-        self.tempoTotal= tempoTotal
-
-
-        '''
-        Start of the time calculation in Hours and the Light curve in the matrix
-         :nn  parameter: calculation's number of dots on the light curve
-         :tamanhoMatrix parameter: receives the spotted star and then plot the planet
-         :tempoHoras parameter: calculates transit time in hours, transforming it into an Eclipse class object
-         : parameter curveLight: calculates the light curve of the planet's transit when eclipsing the star. It also becomes
-         an Eclipse object     
-        '''
-        
-        # calculation of the number of dots on the light curve
-        nn=np.fix(tempoTotal*60./intervaloTempo)
-
-        # OUTPUT
-        tamanhoMatriz= self.Nx #Nx or Ny
-
-        tempoHoras = (np.arange(tamanhoMatriz)-tamanhoMatriz/2)*intervaloTempo/60.   # in hours
-        self.tempoHoras= tempoHoras
-        curvaLuz = [ 1.0 for i in range(tamanhoMatriz)]
-        self.curvaLuz=curvaLuz
-
+        #calculating the obliquity
 
         '''
         Orbit parameters
-         : dteta parameter: angular interval between points of the orbit
-         : tetaPos parameter: angles of the planet's positions in orbit
-         : xplaneta parameter: x in the matrix that projects the planet
-         : yplaneta parameter: t in the matrix that projects the planet
+        :xplaneta parameter: x in the matrix that projects the planet
+        :yplaneta parameter: y in the matrix that projects the planet
         '''
-        dteta = 360*intervaloTempo/self.periodo/24./60   # angular range between orbiting points (in degrees)
 
-        # angles of planet positions in orbit
-        tetaPos = ((np.arange(tamanhoMatriz) - tamanhoMatriz/2)*dteta+270.)*dtor    #in radians
+        nk=2*np.pi/(self.periodo*24)    # in hours^(-1)
+        Tp=self.periodo*anom/360.*24. # pericenter's time (in hours)
+        m = nk*(self.tempoHoras-Tp)     # in radians
+        
+        # calculating the eccentric anomaly in radians
+        eccanom = kepler.solve(m,ecc)  # attached subroutine
+        xs=semiEixoPixel*(np.cos(eccanom)-ecc)
+        ys=semiEixoPixel*(math.sqrt(1-(ecc**2))*np.sin(eccanom))
 
-        #"planet's projected orbit
-        xplaneta = semiEixoPixel*np.cos(tetaPos) + tamanhoMatriz/2
-        yplaneta = semiEixoPixel*np.sin(tetaPos)*np.cos(anguloInclinacao*dtor) + tamanhoMatriz/2
+        ang=anom*dtor-(np.pi/2)
+        xp=xs*np.cos(ang)-ys*np.sin(ang)
+        yp=xs*np.sin(ang)+ys*np.cos(ang)
 
-        if(anguloInclinacao > 90.): 
-            yplaneta = -semiEixoPixel*np.sin(tetaPos)*np.cos(anguloInclinacao*dtor) + tamanhoMatriz/2
+        ie, = np.where(self.tempoHoras == min(abs(self.tempoHoras)))
 
-        pp, = np.where((xplaneta >= 0) & (xplaneta < tamanhoMatriz) & (yplaneta >= 0) & (yplaneta < tamanhoMatriz))    # only points within the matrix
-        xplan = xplaneta[pp]
-        yplan = yplaneta[pp]
-        ''''
-        Light curve and intensity normalization
+        xplaneta=xp-xp[ie[0]]
+        yplaneta=yp*np.cos(self.anguloInclinacao*dtor)
+        
+        pp, = np.where((abs(xplaneta) < 1.2 * tamanhoMatriz/2) & (abs(yplaneta) < tamanhoMatriz/2)) #rearranges the vector with only the necessary points to analyze the light curve
+        xplan = xplaneta[pp] + tamanhoMatriz/2
+        yplan = yplaneta[pp] + tamanhoMatriz/2
+
+        raioPlanetaPixel = self.raioPlanetaRstar * self.raioEstrelaPixel
+
+       
+
         '''
-        #light curve's maximum, used to normalize the intensity
-        maxCurvaLuz = np.sum(self.estrelaManchada) 
+        Start of the calculation of the time (in hours) and light curve in the matrix
+        :nn parameter: number of points in the light curve
+        :tamanhoMatriz parameter: gets the spotted star to then plot the planet
+        :tempoHoras parameter: calculates the transit time in hours, transforming it in an object of the Eclipse class
+        :curvaLuz parameter: calculates the light curve of the planet's transit when eclipsing the star, and also becomes
+        an object of the Eclipse 
+        '''
+        latitudeTransito = -np.arcsin(self.semiEixoRaioStar*np.cos(self.anguloInclinacao*dtor))/dtor # south latitude (arbitrary)
+        # transit duration in hours
+        duracaoTransito=2 * (90.-np.arccos((np.cos(latitudeTransito*dtor))/self.semiEixoRaioStar)/dtor)*self.periodo/360*24. 
+        tempoTotal = 3 * duracaoTransito
+        self.tempoTotal= tempoTotal
 
         
+        # calculation of the number of points in the light curve
+        nn=np.fix(tempoTotal*60./intervaloTempo)
+
+        #selects the largest orbit so that the light curve gets plotted correctly (full observation of the light curve)
+        if(lua == True):
+            if (len(pp)>len(self.ppMoon)):
+                rangeloop = pp
+            else: 
+                rangeloop = self.ppMoon
+                xplan = xplaneta[self.ppMoon] + tamanhoMatriz/2 #xplan and yplan change in case there is the addition of moons 
+                yplan = yplaneta[self.ppMoon] + tamanhoMatriz/2
+        else:
+            rangeloop = pp
+
+
+        ''''
+        Light curve and normalization of intensity
+        '''
+        # maximum of the light curve, used in normalizing the intensity
+        maxCurvaLuz = np.sum(self.estrelaManchada)
 
         '''
-        Creation of the matrix for plotting:
+        Creating the matrix for the plotting:
         '''
-        for i in range(0,len(pp)):
+        #creating variables to plot the animation
+        fig, (ax1, ax2) = plt.subplots(2,1)
+        ims = [] 
+        j = 0 #auxiliary variable used to plot the animation
+        plota = True #FLAG variable that indicates when to store the image of the PLOT
 
-                        plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. #n-by-n matrix
-                        x0=xplan[i]
-                        y0=yplan[i]
 
-                        kk=np.arange(tamanhoMatriz*tamanhoMatriz)
+        print("\nPlease wait while the transit's animation is being generated.\n")
+        #Start of the loops for plotting and calculation of the transit
+        if (lua == False):
+            for i in range(0,len(rangeloop)):
 
-                        ii = np.where((kk/tamanhoMatriz-y0)**2+(kk-tamanhoMatriz*np.fix(kk/tamanhoMatriz)-x0)**2 <= raioPlanetaPixel**2)
-                    
-                        plan[ii]=0.
-                        plan = plan.reshape([tamanhoMatriz,tamanhoMatriz])
+                            plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. ##n-by-n matrix
+                            x0 = xplan[i] 
+                            y0 = yplan[i]
+                                
+                            kk=np.arange(tamanhoMatriz*tamanhoMatriz)
+
+                            ii = np.where((kk/tamanhoMatriz-y0)**2+(kk-tamanhoMatriz*np.fix(kk/tamanhoMatriz)-x0)**2 <= raioPlanetaPixel**2)
                         
-                        curvaLuz[pp[i]]=np.sum(self.estrelaManchada*plan,dtype=float)/maxCurvaLuz
+                            plan[ii]=0.
+                            plan = plan.reshape(self.tamanhoMatriz, self.tamanhoMatriz) #position added to the matrix
+                            self.curvaLuz[rangeloop[i]]=np.sum(self.estrelaManchada*plan,dtype=float)/maxCurvaLuz
+                            
+                            if(plota and self.curvaLuz[rangeloop[i]] != 1 and j<200):
+                                plt.axis([0,self.Nx,0,self.Ny])
+                                im = ax1.imshow(self.estrelaManchada*plan,cmap="hot", animated = True)
+                                ims.append([im]) #stores the points of the graph in the animation (as an image)
+                                j+=1 
+                            plota = not(plota) #auxiliary variable that selects the best gap between images for the plotting
+        else:
+            for i in range(0,len(rangeloop)):
 
-                        if(i == len(pp)/2):
-                            plt.axis([0,self.Nx,0,self.Ny])
-                            plt.imshow(len(self.estrelaManchada)*plan,cmap="gray")
-                            plt.show()
+                            plan = np.zeros(tamanhoMatriz*tamanhoMatriz)+1. ##n-by-n matrix
+                            x0 = xplan[i] 
+                            y0 = yplan[i]
+                                
+                            kk=np.arange(tamanhoMatriz*tamanhoMatriz)
 
+                            ii = np.where((kk/tamanhoMatriz-y0)**2+(kk-tamanhoMatriz*np.fix(kk/tamanhoMatriz)-x0)**2 <= raioPlanetaPixel**2)
+                        
+                            plan[ii]=0.
 
+                            ### adding the moons ###
+                            xm = x0-self.xxm[i]         
+                            ym = y0-self.yym[i]   
+                            ll = np.where((kk/tamanhoMatriz-ym)**2+(kk-tamanhoMatriz*np.fix(kk/tamanhoMatriz)-xm)**2 <= self.Rmoon**2)
+                            plan[ll]=0.
 
+                            #####      
+                            plan = plan.reshape(self.tamanhoMatriz, self.tamanhoMatriz) #position added to the matrix
+                            self.curvaLuz[rangeloop[i]]=np.sum(self.estrelaManchada*plan,dtype=float)/maxCurvaLuz
+
+                            if(plota and self.curvaLuz[rangeloop[i]] != 1 and j<200):
+                                plt.axis([0,self.Nx,0,self.Ny])
+                                im = ax1.imshow(self.estrelaManchada*plan,cmap="hot", animated = True)
+                                ims.append([im]) #stores the points of the graph in the animation (as an image)
+                                j+=1
+                            plota = not(plota) #auxiliary variable that selects the best gap between images for the plotting
+
+        ax2.plot(self.tempoHoras,self.curvaLuz)
+        ax2.axis([-self.tempoTotal/2,self.tempoTotal/2,min(self.curvaLuz)-0.001,1.001])
+        ani =animation.ArtistAnimation(fig, ims, interval=50, blit=True,repeat_delay=0.1)
+        plt.show()
+        #ani.save('animacao_transito.gif',writer="PillowWriter") #saves the generated gif in the file's roots for user use
 
         error=0
         self.error=error
@@ -170,46 +275,86 @@ class Eclipse:
         the variable will have its starting value (which is -1)
         '''
         return self.error
+    def setEstrela(self,estrela):
+        '''
+        With this function, it is possible to hand the updated star to the forming eclipse, in case there is the addition of new spots.
+        '''
+        self.estrelaManchada = estrela
+
     
-class Moon (object):
-    #pm = 0.0751017821823 #moon period
-    #rm = 0.0288431223213 # moon radius
-    #dm = 4.10784266075 # moon distance
-    tm0 = 1.15612181491 # moon first transit time
-    #kind = 'big-fst_'
-    
+############ adding moons ###########
+
+class Moon:
+    '''
+    Moon Class, created according to the addition of planets.
+    '''
     pos = np.random.choice([-1, 1])
-    
-    
-    def __init__(self, radius, mass, albedo, distance, orbit):
-        self.radius = radius
-        self.mass = mass
-        self.albedo = albedo
-        self.distance = distance
-        self.orbit = orbit
+
+    def __init__(self, raioM, massM, raioEstrelaPixel, anguloInclinacao ,periodoM, raioPlanetaPixel,tempoHoras,distancia):
+
+        '''
+        :raioM parameter:: moon's radius in Earth's radius units
+        :massM parameter:: moon's mass in Earth's mass units
+        :anguloInclinação parameter:: planet's tilt angle in degrees
+        :period parameter:: period of the moon's orbit in days
+        :raioPlanetaPixel parameter:: planet's radius in pixel
+        :tempoHoras parameter:: planet's transit time in hours
+        :distancia parameter:: moon-planet distance in km
+        '''
         
+        tm0 = 0 # moon first transit time
+        self.raioM = raioM
+        self.massM = massM
+        self.raioEstrelaPixel = raioEstrelaPixel
+        self.anguloInclinacao = anguloInclinacao #in degrees
+        self.periodo = periodoM #in days
+        self.tm0 = tm0 #default
+        self.raioPlanetaPixel = raioPlanetaPixel
+        self.tempoHoras = tempoHoras
+        self.distancia = distancia
         
         
     # moon orbit in equatorial plane of planet
-    def moonOrbit(self, Rs_pix, Rpl_pix, tstep):
-        self.distance = self.distance * self.pos    
-        Rmoon = self.radius * Rs_pix #raio da lua em relacao ao raio da estrela
-        dmoon = self.distance * Rpl_pix
-        theta_m0 = self.tm0
+    def moonOrbit(self, raioStar):
+        '''
+        Function that calculates the moon's orbit, only requiring to use the star's radius as raioStar in km
+        '''
+        self.Rmoon = self.raioM / raioStar #moon's radius in relation to star's radius
+        self.RmoonPixel = self.Rmoon * self.raioEstrelaPixel #moon's radius calculated in pixel
         
-        theta_m = 2*np.pi * tstep / (self.orbit.period*24.) - theta_m0
-        xm = dmoon * np.cos(theta_m)
-        ym = dmoon * np.sin(theta_m) * np.cos(self.orbit.inclinationAngle) 
+        self.dmoon = self.distancia * self.raioEstrelaPixel #calculation of the distance in pixel
         
-        pair = []
-        pair.append(xm)
-        pair.append(ym)
-        
-        return pair
-    
-    def dMoon(self, Rpl_pix):
-        return self.distance * Rpl_pix
-    
-    def rMoon(self, Rs_pix):
-        return self.radius * Rs_pix   
+        self.theta_m = 2*np.pi * self.tempoHoras / (self.periodo*24.) - self.tm0
+        self.xm = self.dmoon * np.cos(self.theta_m)
+        self.ym = self.dmoon * np.sin(self.theta_m) * np.cos(self.anguloInclinacao) 
 
+    def getppMoon(self,tamanhoMatriz):
+        #calculating the moon's projected orbit
+        dtor = np.pi/180.
+        xlua = self.xm + tamanhoMatriz/2
+        ylua = self.ym + tamanhoMatriz/2
+        if(self.anguloInclinacao > 90.): 
+            ylua = -self.dmoon*np.sin(self.theta_m)*np.cos(self.anguloInclinacao*dtor) + tamanhoMatriz/2
+
+        #moon's projected orbit
+        ppMoon, = np.where((xlua >= 0) & (xlua < tamanhoMatriz) & (ylua >= 0) & (ylua < tamanhoMatriz)) 
+        self.xl = xlua[ppMoon]
+        self.yl = ylua[ppMoon]
+        return ppMoon   
+    
+    def getxl(self):
+        return self.xl
+    def getyl(self):
+        return self.yl
+
+    def getRmoon(self):
+        return self.RmoonPixel
+
+    def dMoon(self):
+        return self.distancia * self.raioPlanetaPixel
+
+    def getxm(self):
+        return self.xm
+
+    def getym(self):
+        return self.ym
