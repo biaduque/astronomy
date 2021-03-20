@@ -56,6 +56,7 @@ class estrela:
         self.error=error
         self.Nx = self.tamanhoMatriz
         self.Ny = self.tamanhoMatriz
+        self.color = "hot"
     
     #insert spots
 
@@ -199,5 +200,5 @@ class estrela:
         Nx = tamanhoMatriz
         Ny = tamanhoMatriz
         plt.axis([0,Nx,0,Ny])
-        plt.imshow(estrela,cmap="gray")
+        plt.imshow(estrela,self.color)
         plt.show()

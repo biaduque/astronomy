@@ -10,6 +10,17 @@ def Validar(msg):
         else:
             print("\033[0;31mError! Type a valid entry.\033[m")
 
+def ValidarEscolha(msg):
+    '''function created to validate choices (1 or 2)'''
+    valor=0
+    while True:
+        n=int(input(msg))
+        if  (n==1) or (n==2):
+            valor= n
+            return valor
+        else:
+            print("\033[0;31mError! Type a valid entry.\033[m")
+
 def calSemiEixo(periodo,mass):
     '''
     function that calculates the planet's semi-axis according to the period through Kepler's 3rd law

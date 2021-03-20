@@ -24,7 +24,7 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib import pyplot
 from star_nv1 import estrela
-from verify import Validar
+from verify import Validar, ValidarEscolha
 #from keplerAux import keplerfunc  # auxiliary library in case of kepler library malfunction
 import matplotlib.animation as animation
 import kepler # library to calculate the eccentric orbits (pip install kepler)
@@ -54,9 +54,9 @@ class Eclipse:
         '''
         Function called in Main to calculate the transit's time in hours
         '''
-        x=int(input("Time period=1. Do you want to change it? 1. YES | 2. NO:"))
+        x=ValidarEscolha("Time period=1. Do you want to change it? 1. YES | 2. NO:")
         if x ==1:
-            self.intervaloTempo=float(input('Enter the Time period in minutes:'))
+            self.intervaloTempo=Validar('Enter the Time period in minutes:')
         elif x==2:
             self.intervaloTempo = 1.   # in minutes
 

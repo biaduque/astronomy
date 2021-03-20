@@ -5,12 +5,29 @@ def Validar(msg):
     '''função criada para validar entradas, por exemplo numeros nao float/int ou negativos'''
     valor=0
     while True:
-        n=float(input(msg))
-        if  n>=0:
-            valor= n
-            return valor
-        else:
-            print("\033[0;31mErro! Digite uma entrada válida\033[m")
+        try:
+            n=float(input(msg))
+            if  n>=0:
+                valor= n
+                return valor
+            else:
+                print("\033[0;31mErro! Digite uma entrada válida\033[m")
+        except Exception as erro:
+            print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+
+def ValidarEscolha(msg):
+    '''função criada para validar escolhas (1 ou 2)'''
+    valor=0
+    while True:
+        try:
+            n=int(input(msg))
+            if  (n==1) or (n==2):
+                valor= n
+                return valor
+            else:
+                print("\033[0;31mErro! Digite uma entrada válida\033[m")
+        except Exception as erro:
+            print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
 
 def calSemiEixo(periodo,mass):
     '''

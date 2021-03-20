@@ -40,6 +40,8 @@ are made through this object.
 tempoTransito parameter:: planet's transit time
 curvaLuz parameter:: light curve's matrix that will be plotted in graph form
 tempoHoras parameter:: transit time in hours
+ecc parameter:: eccentricity
+anom parameter:: anomaly
 '''
 
 raio= 373. #default (pixel)
@@ -49,6 +51,8 @@ raioStar=0.117 #star's radius in relation to the sun's radius
 raioStar=raioStar*696340 #multiplying by the sun's radius in km
 coeficienteHum=0.65
 coeficienteDois=0.28
+ecc = 0 #eccentricity
+anom = 0 #anomaly
 
 
 #creates the star

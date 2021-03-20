@@ -24,7 +24,7 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib import pyplot
 from estrela_nv1 import estrela
-from verify import Validar
+from verify import Validar, ValidarEscolha
 #from keplerAux import keplerfunc  #biblioteca auxiliar caso a biblioteca kepler nao funcione
 import matplotlib.animation as animation
 import kepler #para o calculo de orbitas excentricas (pip install kepler)
@@ -55,9 +55,9 @@ class Eclipse:
         '''
         Função chamada na Main para o cálculo do tempo de Trânsito em Horas
         '''
-        x=int(input("Intervalo de tempo=1. Deseja alterar? 1. SIM | 2. NÃO:"))
+        x=ValidarEscolha("Intervalo de tempo=1. Deseja alterar? 1. SIM | 2. NÃO:")
         if x ==1:
-            self.intervaloTempo=float(input('Digite o intervalo de tempo em minutos:'))
+            self.intervaloTempo=Validar('Digite o intervalo de tempo em minutos:')
         elif x==2:
             self.intervaloTempo = 1.   # em minutos
 

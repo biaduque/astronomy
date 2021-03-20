@@ -13,7 +13,7 @@ import numpy as np
 from matplotlib import pyplot
 from estrela_nv1 import estrela
 from eclipse_nv1 import Eclipse
-from verify import Validar,calSemiEixo,calculaLat
+from verify import Validar,ValidarEscolha,calSemiEixo,calculaLat
 
 
 ############CRIAÇÃO DA ESTRELA#############
@@ -50,7 +50,7 @@ intensidadeMaxima=240.
 error=-1
 while error==-1:
     try:
-        x=int(input('1. Plotar a estrela exemplo|2. Adicionar parâmetros a estrela:'))
+        x=ValidarEscolha('1. Plotar a estrela exemplo|2. Adicionar parâmetros a estrela:')
         if x==1:
             raioStar=1.
         #parametros dos coeficientes de escurecimento de limbo
@@ -61,11 +61,18 @@ while error==-1:
             raioStar=raioStar*696340 #multiplicando pelo raio solar em Km 
             coeficienteHum = float(input('Coeficiente de escurecimento de limbo 1 (u1):'))
             coeficienteDois = float(input('Coeficiente de escurecimento de limbo 2 (u2):'))
-
         #fazer um if de config recomendada
-        x=int(input('Tamanho da matriz definido como 856, deseja alterar? 1.Sim 2.Não :'))
+        x=ValidarEscolha('Tamanho da matriz definido como 856, deseja alterar? 1.Sim 2.Não :')
         if x== 1:
-            tamanhoMatriz=int(input('Digite o tamanho da Matriz:'))
+            while True:
+                try:
+                    tamanhoMatriz=int(input('Digite o tamanho da Matriz:'))
+                    if tamanhoMatriz>0:
+                        break
+                    else:
+                        print("\033[0;31mErro! Digite uma entrada válida\033[m")
+                except Exception as erro:
+                    print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m') #retorna o tipo de erro      
         elif x==2:
             tamanhoMatriz = 856
         # Construcao da estrela com escurecimento de limbo 
@@ -122,21 +129,17 @@ def criandoPlanetas(estrela_,planetas,qtd):
             ║- RAIO DO PLANETA (em relação ao raio da estrela): 0.1                        	║
             ╚═══════════════════════════════════════════════════════════════════════════════╝\033[m'''
             )
-    dtor = np.pi/180.  
-    aux= True
-    while aux == True: 
-        try:
-            x=int(input('1.Eclipse Exemplo. 2.Alterar:')) #escolha de como passar os parametros do eclipse
-            aux= False
-        except Exception as erro:
-            print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
+    dtor = np.pi/180.
+    x=ValidarEscolha('1.Eclipse Exemplo. 2.Alterar:') #escolha de como passar os parametros do eclipse
                     
     if x==1:
     #entradas default
         periodo = 10.  # em dias
         semiEixoRaioStar = 15   # em unidades de Rstar
         anguloInclinacao = 88.  # em graus
-        raioPlanetaRstar = 0.1   # em unidades de Rstar      
+        raioPlanetaRstar = 0.1   # em unidades de Rstar
+        anom = 0
+        ecc = 0
                 
     elif x==2:
         aux= True
@@ -149,7 +152,7 @@ def criandoPlanetas(estrela_,planetas,qtd):
                 anom = float(input("Digite e Anomalia: (Default = 0)"))
                 ecc = float(input("Digite a Excentricidade: (Default = 0)"))
 
-                dec=int(input("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |"))
+                dec=ValidarEscolha("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |")
                 if dec==1:
                     mass= Validar("Digite a massa da estrela em unidades de MassSun:")
                     semieixoorbital = calSemiEixo(periodo,mass)
@@ -162,9 +165,12 @@ def criandoPlanetas(estrela_,planetas,qtd):
                     semiEixoRaioStar = ((1.469*(10**8))*semiEixoRaioStar)/raioStar
                     #multiplicando pelas UA (transformando em Km) e convertendo em relacao ao raio da estrela
                 
-                while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1: 
-                    print('O Planeta não está eclipsando a estrela. Por favor, mude o angulo de inclinação.')
-                    anguloInclinacao = float(input('Angulo de inclinação:')) 
+                while semiEixoRaioStar*np.cos(anguloInclinacao*dtor) >= 1:
+                    try:
+                        print('O Planeta não está eclipsando a estrela. Por favor, mude o angulo de inclinação.')
+                        anguloInclinacao = float(input('Angulo de inclinação:'))
+                    except Exception as erro:
+                        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
                 
                 aux= False
             
@@ -176,7 +182,7 @@ def criandoPlanetas(estrela_,planetas,qtd):
     error=-1
     while error==-1:
         try:
-            escolha= Validar('\033[1;35mDeseja adicionar manchas em sua estrela? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá mancha ou não.
+            escolha= ValidarEscolha('\033[1;35mDeseja adicionar manchas em sua estrela? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá mancha ou não.
             if escolha==1:
                 latsugerida = calculaLat(semiEixoRaioStar,anguloInclinacao)
                 print("A latitude sugerida para que a mancha influencie na curva de luz da estrela é:", latsugerida)
@@ -188,23 +194,26 @@ def criandoPlanetas(estrela_,planetas,qtd):
                 fi = [0.]*quantidade #vetor intensidade manchas
                 li = [0.]*quantidade #vetor longitude manchas
                 while count!=quantidade: #o laço ira rodar a quantidade de manchas selecionada pelo usuario
-                    print('\033[1;35m\n\n══════════════════ Parâmetros da mancha ',count+1,'═══════════════════\n\n\033[m')
-                    r = Validar('Digite o raio da mancha em função do raio da estrela: ')
+                    try:
+                        print('\033[1;35m\n\n══════════════════ Parâmetros da mancha ',count+1,'═══════════════════\n\n\033[m')
+                        r = Validar('Digite o raio da mancha em função do raio da estrela: ')
                     
-                    intensidadeMancha= Validar('Digite a intensidade da mancha em função da intensidade máxima da estrela:')
-                    fi[count]=intensidadeMancha
-                    lat=float(input('Latitude da mancha:'))
+                        intensidadeMancha= Validar('Digite a intensidade da mancha em função da intensidade máxima da estrela:')
+                        fi[count]=intensidadeMancha
+                        lat=float(input('Latitude da mancha:'))
 
-                    longt=float(input('Longitude da mancha:'))
-                    li[count]=longt
+                        longt=float(input('Longitude da mancha:'))
+                        li[count]=longt
 
-                    raioMancha= r*raioStar
-                    area = np.pi *(raioMancha**2)
-                    fa[count] = area
+                        raioMancha= r*raioStar
+                        area = np.pi *(raioMancha**2)
+                        fa[count] = area
 
-                    estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #recebe a escolha de se irá receber manchas ou não
-                    error=estrela_.getError()
-                    count+=1
+                        estrela=estrela_.manchas(r,intensidadeMancha,lat,longt) #recebe a escolha de se irá receber manchas ou não
+                        error=estrela_.getError()
+                        count+=1
+                    except Exception as erro:
+                        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
                 print("Intensidades:",fi)
                 print("Longitudes:",li)
                 print("Areas:",fa)
@@ -227,34 +236,37 @@ def criandoPlanetas(estrela_,planetas,qtd):
     lua = False
     while error==-1:
         try:
-            escolha= Validar('\033[1;35mDeseja adicionar luas neste Planeta? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá luas ou não.
+            escolha= ValidarEscolha('\033[1;35mDeseja adicionar luas neste Planeta? 1. Sim 2. Não |\033[m')  #x define a escolha, se haverá luas ou não.
             if escolha==1:
                 lua = True
                 quantidade= Validar('\033[1;35mDigite a quantidade de LUAS a serem adicionadas:\033[m')
                 quantidade=int(quantidade)
                 count=0
                 while count!=quantidade: #o laço ira rodar a quantidade de luas selecionada pelo usuario
-                    print('\033[1;35m\n\n══════════════════ Parâmetros da LUA ',count+1,'═══════════════════\n\n\033[m')
-                    # radius, mass,distance, raioPlanetaPixel, raioStar,tempoHoras
-                    rmoon = Validar('Digite o raio da Lua em função do raio da Terra: ')
-                    rmoon = rmoon *6371 #multiplicando pelo R da terra em Km
-                    mass = Validar('Digite a massa da Lua (em unidades de massa Terra): ')  
-                    mass = mass * (5.972*(10**24))
-                    massPlaneta = Validar('Digite a massa do Planeta (em unidades de massa de Júpiter ): ') #deve ser convertido para Kg
-                    massPlaneta = massPlaneta * (1.898 *(10**27)) #passar para gramas por conta da constante G
-                    G = (6.674184*(10**(-11)))
-                    perLua = Validar('Digite o período da órbita da Lua:') #em dias 
-                    distancia=((((perLua*24.*3600./2./np.pi)**2)*G*(massPlaneta+mass))**(1./3))/raioStar
-                    distancia = distancia/100
+                    try:
+                        print('\033[1;35m\n\n══════════════════ Parâmetros da LUA ',count+1,'═══════════════════\n\n\033[m')
+                        # radius, mass,distance, raioPlanetaPixel, raioStar,tempoHoras
+                        rmoon = Validar('Digite o raio da Lua em função do raio da Terra: ')
+                        rmoon = rmoon *6371 #multiplicando pelo R da terra em Km
+                        mass = Validar('Digite a massa da Lua (em unidades de massa Terra): ')  
+                        mass = mass * (5.972*(10**24))
+                        massPlaneta = Validar('Digite a massa do Planeta (em unidades de massa de Júpiter ): ') #deve ser convertido para Kg
+                        massPlaneta = massPlaneta * (1.898 *(10**27)) #passar para gramas por conta da constante G
+                        G = (6.674184*(10**(-11)))
+                        perLua = Validar('Digite o período da órbita da Lua:') #em dias 
+                        distancia=((((perLua*24.*3600./2./np.pi)**2)*G*(massPlaneta+mass))**(1./3))/raioStar
+                        distancia = distancia/100
 
-                    #x1000**(1/3)/10ˆ5 para a conversao por conta do parametro G
-                    print("distancia = ",distancia)
-                    print("rmoon = ",rmoon/raioStar)
-                    raioPlanetaPixel = (raioPlanetaRstar)*(raioEstrelaPixel)
-                    #instanciando LUA
-                    moon = eclipse.criarLua(rmoon,mass,raioPlanetaPixel,raioStar,tempoHoras,anguloInclinacao,periodo,distancia)
-                    estrela = estrela_.getEstrela()
-                    count+=1
+                        #x1000**(1/3)/10ˆ5 para a conversao por conta do parametro G
+                        print("distancia = ",distancia)
+                        print("rmoon = ",rmoon/raioStar)
+                        raioPlanetaPixel = (raioPlanetaRstar)*(raioEstrelaPixel)
+                        #instanciando LUA
+                        moon = eclipse.criarLua(rmoon,mass,raioPlanetaPixel,raioStar,tempoHoras,anguloInclinacao,periodo,distancia)
+                        estrela = estrela_.getEstrela()
+                        count+=1
+                    except Exception as erro:
+                        print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
                 break      
             else:
                 estrela = estrela_.getEstrela()
@@ -272,7 +284,7 @@ def criandoPlanetas(estrela_,planetas,qtd):
             print(f'\033[0;31mO valor digitado é inválido. Por favor, digite novamente. O tipo de problema encontrado foi{erro.__class__}\n\n\033[m')
 
     #deseja printar a curva de luz agora? adicionar opcao
-    decisao = Validar("Deseja printar a curva de luz agora? 1.SIM | 2.NÃO: ")
+    decisao = ValidarEscolha("Deseja printar a curva de luz agora? 1.SIM | 2.NÃO: ")
     if (decisao==2 and qtd!=planetas-1):
         print("\033[1;33mO proximo planeta pode ser adicionado :) \033[m")
     else:
@@ -290,7 +302,7 @@ def criandoPlanetas(estrela_,planetas,qtd):
 #passa pra main esse objeto 
 planetas = Validar("Digite a quantidade de planeta(s) desejado(s): ")
 qtd = 0
-while (qtd!= planetas):
+while (qtd < planetas):
     criandoPlanetas(estrela_,planetas,qtd)
     qtd+=1 
 #plota a orbita dos planetas adicionados 

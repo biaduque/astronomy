@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot
 from estrela_nv1 import estrela
 from eclipse_nv1 import Eclipse
-from verify import Validar,calSemiEixo,calculaLat
+from verify import Validar,ValidarEscolha,calSemiEixo,calculaLat
 
 '''
 main programado para profissionais e estudantes familiarizados com a área 
@@ -49,6 +49,8 @@ raioStar=0.117 #raio da estrela em relacao ao raio do sol
 raioStar=raioStar*696340 #multiplicando pelo raio solar em Km 
 coeficienteHum=0.65
 coeficienteDois=0.28
+ecc = 0
+anom = 0
 
 
 #cria estrela
@@ -61,7 +63,7 @@ dtor = np.pi/180.
 periodo = 6.099 # em dias
 anguloInclinacao = 89.86  # em graus
 
-dec=int(input("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |"))
+dec=ValidarEscolha("Deseja calular o semieixo Orbital do planeta através da 3a LEI DE KEPLER? 1. Sim 2.Não |")
 if dec==1:
     mass=0. #colocar massa da estrela em relação a massa do sol
     semieixoorbital = calSemiEixo(mass,periodo)
@@ -139,7 +141,7 @@ estrela = estrela_.getEstrela()
 
 
 #eclipse
-eclipse.criarEclipse(semiEixoRaioStar, raioPlanetaRstar,periodo,anguloInclinacao,lua)
+eclipse.criarEclipse(semiEixoRaioStar, raioPlanetaRstar,periodo,anguloInclinacao,lua,ecc,anom)
 
 
 print ("Tempo Total (Trânsito):",eclipse.getTempoTransito()) 
