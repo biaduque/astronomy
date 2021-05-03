@@ -18,7 +18,7 @@ Check out our website for more information: [click here!](https://www.starsandex
 
 # Files 
 
-Documentação UML -> Download to view the project's UML documentation
-Programs EN version -> Download to run the program via Python IDE (ENGLISH VERSION)
-Programas PT BR - version -> Download to run the program via Python IDE (PT - BR VERSION)
-Curva de Luz.rar -> Download to run the executable application
+* Documentação UML -> Download to view the project's UML documentation
+* Programs EN version -> Download to run the program via Python IDE (ENGLISH VERSION)
+* Programas PT BR - version -> Download to run the program via Python IDE (PT - BR VERSION)
+* Curva de Luz.rar -> Download to run the executable application
