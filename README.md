@@ -22,3 +22,34 @@ Check out our website for more information: [click here!](https://www.starsandex
 * Programs EN version -> Download to run the program via Python IDE (ENGLISH VERSION)
 * Programas PT BR - version -> Download to run the program via Python IDE (PT - BR VERSION)
 * Curva de Luz.rar -> Download to run the executable application
+
+Antes de começar os testes, lembre-se de instalar as seguintes bibliotecas: 
+<br>
+
+_Before starting testing, remember to install the following libraries:_
+
+</br>
+
+# For main.py
+* numpy: pip install numpy (https://numpy.org/install/)
+* matplotlib: pip install matplotlib (https://matplotlib.org/)
+
+# For eclipse_nv1.py 
+* kepler: pip install kepler.py (https://pypi.org/project/kepler.py/) 
+
+
+# For estrela_nv1.py 
+* numpy
+* matplotlib
+
+
+*** 
+
+⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
+
+Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo.
+<br>
+
+_If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
+
+</br>
