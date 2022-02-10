@@ -45,7 +45,10 @@ _Before starting testing, remember to install the following libraries:_
 
 *** 
 
-⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
+## Learn more 
+Check out more about the project and its documentation by checking our Wiki (https://github.com/biaduque/astronomy/wiki)
+
+## ⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
 
 Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo.
 <br>
@@ -54,5 +57,4 @@ _If you are already familiar with python programming, use the version "main_for_
 
 </br>
 
-## Learn more 
-Check out more about the project and its documentation by checking our Wiki (https://github.com/biaduque/astronomy/wiki)
+
