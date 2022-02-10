@@ -53,3 +53,6 @@ Se já está familiarizado com programação em python, utilize a versão "main_
 _If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
 
 </br>
+
+## Learn more 
+Check out more about the project and its documentation by checking our Wiki (https://github.com/biaduque/astronomy/wiki)
