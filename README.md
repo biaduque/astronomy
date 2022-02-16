@@ -1,4 +1,10 @@
-## Projeto Stars and Exoplanets 
+# 🚨 Updates 🚨 
+we have updates and optimizations in the git repository: 
+https://github.com/Transit-Model-CRAAM/pipelineMCMC
+* Pipeline programming 
+* Python + C 
+
+## ⭐ Projeto Stars and Exoplanets ⭐
 Desenvolvido com o intuito de divulgar e facilitar programas que geram a curva de luz de uma Host Star com Exoplanetas a orbitando.
 <br>
 Confira nosso site para mais informações: [clique aqui!](https://www.starsandexoplanets.org/)
@@ -6,7 +12,7 @@ Confira nosso site para mais informações: [clique aqui!](https://www.starsande
 
 ***
 
-## Stars and Exoplanets Project
+## ⭐ Stars and Exoplanets Project ⭐
 Developed in order to promote and facilitate programs that generate the light curve of a Host Star with Exoplanets orbiting.
 <br>
 Check out our website for more information: [click here!](https://www.starsandexoplanets.org/)
@@ -23,19 +29,19 @@ Check out our website for more information: [click here!](https://www.starsandex
 * Programas PT BR - version -> Download to run the program via Python IDE (PT - BR VERSION)
 * Curva de Luz.rar -> Download to run the executable application
 
-Antes de começar os testes, lembre-se de instalar as seguintes bibliotecas: 
+🇧🇷 Antes de começar os testes, lembre-se de instalar as seguintes bibliotecas:  
 <br>
 
-_Before starting testing, remember to install the following libraries:_
+🇺🇸 Before starting testing, remember to install the following libraries:
 
 </br>
 
 # For main.py
-* numpy: pip install numpy (https://numpy.org/install/)
-* matplotlib: pip install matplotlib (https://matplotlib.org/)
+* numpy: ```pip install numpy ``` (https://numpy.org/install/)
+* matplotlib: ``` pip install matplotlib ``` (https://matplotlib.org/)
 
 # For eclipse_nv1.py 
-* kepler: pip install kepler.py (https://pypi.org/project/kepler.py/) 
+* kepler: ``` pip install kepler.py ```  (https://pypi.org/project/kepler.py/) 
 
 
 # For estrela_nv1.py 
@@ -50,11 +56,12 @@ Check out more about the project and its documentation by checking our Wiki (htt
 
 ## ⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
 
-Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo.
+🇧🇷 _Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo._
 <br>
 
-_If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
+🇺🇸 _If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
 
 </br>
+
 
 
