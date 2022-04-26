@@ -68,7 +68,7 @@ anguloInclinacao = 89.86  # in degrees
 dec=int(input("Do you want to calculate the planet's Orbital semi-axis using KEPLER'S 3RD LAW? 1.Yes 2.No |"))
 if dec==1:
     mass=0. #put here the star's mass value in relation to the sun's mass
-    semieixoorbital = calSemiEixo(mass,periodo)
+    semieixoorbital = calSemiEixo(periodo,mass)
     semiEixoRaioStar = ((semieixoorbital/1000)/raioStar)
     #converting to km to calculate in relation to the star's radius
 else:
