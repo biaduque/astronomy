@@ -57,10 +57,12 @@ Check out more about the project and its documentation by checking our Wiki (htt
 ## ⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
 
 🇧🇷 _Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo._
+🇧🇷 _Utilize a versão 3.8 do Python._
+
 <br>
 
 🇺🇸 _If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
-
+🇺🇸 _Use 3.8 Python version._
 </br>
 
 
