@@ -2,7 +2,7 @@
 we have updates and optimizations in the git repository: 
 https://github.com/Transit-Model-CRAAM/pipelineMCMC
 * Pipeline programming 
-* Python + C 
+* Python (3.8) + C 
 
 ## ⭐ Projeto Stars and Exoplanets ⭐
 Desenvolvido com o intuito de divulgar e facilitar programas que geram a curva de luz de uma Host Star com Exoplanetas a orbitando.
@@ -54,15 +54,17 @@ Check out our website for more information: [click here!](https://www.starsandex
 ## Learn more 
 Check out more about the project and its documentation by checking our Wiki (https://github.com/biaduque/astronomy/wiki)
 
-## ⚠️⚠️⚠️⚠️ Atention ⚠️⚠️⚠️⚠️
+## ⚠️ Atention
 
 🇧🇷 _Se já está familiarizado com programação em python, utilize a versão "main_para_programadores.py" para a melhor otimização do processo._
+
 🇧🇷 _Utilize a versão 3.8 do Python._
 
 <br>
 
 🇺🇸 _If you are already familiar with python programming, use the version "main_for_programmers.py" for the best optimization of the process._
-🇺🇸 _Use 3.8 Python version._
+
+🇺🇸 _Use Python version 3.8._
 </br>
 
 
