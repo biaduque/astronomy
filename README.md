@@ -53,7 +53,8 @@ Check out our website for more information: [click here!](https://www.starsandex
 
 ## Learn more 
 Check out more about the project and its documentation by checking our Wiki (https://github.com/biaduque/astronomy/wiki)
-Or read my produced field research article. Available in: http://eventoscopq.mackenzie.br/index.php/jornada/xvijornada/paper/view/1879/1226
+
+Or read my produced field research article. Available in: (http://eventoscopq.mackenzie.br/index.php/jornada/xvijornada/paper/view/1879/1226)
 
 ## ⚠️ Atention
 
